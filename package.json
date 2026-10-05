@@ -1,0 +1,10 @@
+{
+  "name": "perezamadorluisenrique-gif.github.io",
+  "private": true,
+  "description": "Hidden Problems Lab landing page and Android Digital Asset Links",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "python3 -m http.server 8080"
+  }
+}
