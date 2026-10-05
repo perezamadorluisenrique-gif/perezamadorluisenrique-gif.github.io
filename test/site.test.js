@@ -17,11 +17,14 @@ const PACKAGES = new Set([
 test('assetlinks.json is valid Digital Asset Links', () => {
   const links = JSON.parse(read('.well-known/assetlinks.json'));
   assert.ok(Array.isArray(links), 'top level must be an array');
+  const pkgs = links.map((s) => s.target && s.target.package_name);
+  assert.strictEqual(new Set(pkgs).size, pkgs.length, 'one statement per package');
   for (const s of links) {
     assert.deepStrictEqual(s.relation, ['delegate_permission/common.handle_all_urls']);
     assert.strictEqual(s.target.namespace, 'android_app');
     assert.ok(PACKAGES.has(s.target.package_name), `unknown package ${s.target.package_name}`);
-    assert.ok(s.target.sha256_cert_fingerprints.length > 0, 'each statement needs a fingerprint');
+    // Play app signing key (store installs) and upload key (sideloaded APKs).
+    assert.ok(s.target.sha256_cert_fingerprints.length >= 2, 'each statement needs both fingerprints');
     for (const fp of s.target.sha256_cert_fingerprints) {
       assert.match(fp, /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/, `bad SHA-256 fingerprint ${fp}`);
     }
@@ -45,6 +48,9 @@ test('landing page links all three apps and their sources', () => {
 test('landing page keeps the domain safety wording', () => {
   const html = read('index.html');
   assert.match(html, /confirm with your pharmacist/);
+  assert.match(html, /Nunca identifica una pastilla/);
+  assert.match(html, /confirme con su farmacéutico/);
+  assert.doesNotMatch(html, /new look means/i);
   assert.doesNotMatch(html, /\bis safe\b|\bare safe\b/i);
 });
 

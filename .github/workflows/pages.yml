@@ -7,11 +7,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
+# Never cancel a main deploy partway; superseded PR runs may be cancelled.
 concurrency:
   group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -29,6 +30,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [test]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - name: Collect site files
