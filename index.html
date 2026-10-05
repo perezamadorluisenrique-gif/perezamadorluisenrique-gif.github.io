@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hidden Problems Lab: three free apps</title>
+  <meta name="description" content="Three free web apps for problems people don't notice yet: refill pills that suddenly look different, recalled products at home, and TLS certificates breaking under shorter lifetimes. No accounts, data stays on your device.">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23fbbf24' stroke-width='3'/%3E%3Cpath d='M22 22 L27 27' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #f7f7f5; --card: #ffffff; --text: #1f2937; --muted: #4b5563; --line: #e5e7eb; --link: #1d4ed8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #111827; --card: #1f2937; --text: #f3f4f6; --muted: #d1d5db; --line: #374151; --link: #93c5fd; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
+    h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 8px; }
+    .lead { color: var(--muted); margin: 0 0 4px; }
+    .apps { list-style: none; padding: 0; margin: 28px 0; display: grid; gap: 16px; }
+    .app { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: start; }
+    .app img, .app svg { width: 56px; height: 56px; border-radius: 12px; }
+    .app h2 { font-size: 1.2rem; margin: 0 0 4px; }
+    .app h2 a { color: var(--link); }
+    .app p { margin: 0 0 6px; }
+    .app .es { color: var(--muted); font-size: 0.95rem; }
+    .app .safe { font-size: 0.92rem; color: var(--muted); }
+    a { color: var(--link); }
+    h2.section { font-size: 1.15rem; margin: 32px 0 8px; }
+    footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Hidden Problems Lab</h1>
+  <p class="lead">Three free apps for problems people don't notice until they hurt: a refill that suddenly looks different, a recalled product still in the house, and website certificates that will start expiring much faster.</p>
+  <p class="lead" lang="es">Tres aplicaciones gratuitas para problemas que la gente no nota a tiempo.</p>
+
+  <ul class="apps">
+    <li class="app">
+      <img src="/same-pill-new-look/icon.svg" alt="" width="56" height="56">
+      <div>
+        <h2><a href="/same-pill-new-look/">Same Pill, New Look</a></h2>
+        <p>Warns you when a refill comes from a different generic maker and will look different, so you check with your pharmacist instead of skipping doses. English and Spanish.</p>
+        <p class="es" lang="es">Le avisa cuando el resurtido de su medicamento viene de otro fabricante y la pastilla se verá diferente, para que lo confirme con su farmacéutico.</p>
+        <p class="safe">It never identifies a pill. It tells you when a refill comes from a new maker, so you can confirm with your pharmacist.</p>
+        <p class="safe" lang="es">Nunca identifica una pastilla. Le avisa cuando el resurtido viene de un nuevo fabricante, para que lo confirme con su farmacéutico.</p>
+      </div>
+    </li>
+    <li class="app">
+      <img src="/recall-radar/icon.svg" alt="" width="56" height="56">
+      <div>
+        <h2><a href="/recall-radar/">RecallRadar</a></h2>
+        <p>Checks the products, food and car you already own against U.S. recalls from CPSC, the FDA and NHTSA, then links the official notice for the refund, replacement or repair.</p>
+        <p class="es" lang="es">Revisa si los productos, alimentos y el auto que ya tiene están bajo un retiro del mercado en EE. UU.</p>
+      </div>
+    </li>
+    <li class="app">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#ecfdf5"/><circle cx="16" cy="16" r="11" fill="none" stroke="#0f766e" stroke-width="2.5"/><circle cx="16" cy="16" r="5.5" fill="none" stroke="#0f766e" stroke-width="2.5"/><path d="M16 16 L24.5 8.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div>
+        <h2><a href="/cert-radar/">47-Day Cert Radar</a></h2>
+        <p>Enter a domain to see every public TLS certificate from Certificate Transparency logs and when each one breaks as maximum lifetimes drop to 200, 100 and then 47 days.</p>
+        <p class="es" lang="es">Muestra los certificados TLS públicos de un dominio y cuándo dejarán de ser válidos con las nuevas vigencias máximas más cortas.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h2 class="section">Private by design</h2>
+  <p>No accounts and no servers. What you enter stays in your browser. Searches run on your device or go straight from your browser to the public sources each app names. Visits are counted with <a href="https://www.goatcounter.com/">GoatCounter</a>: no cookies, no personal data, only the page path, the referring site and the screen width, and nothing when Do Not Track is on.</p>
+  <p lang="es">Sin cuentas ni servidores. Sus datos se quedan en su dispositivo. Las visitas se cuentan con GoatCounter, sin cookies ni datos personales.</p>
+
+  <footer>
+    <p>Free and open source: <a href="https://github.com/perezamadorluisenrique-gif/same-pill-new-look">Same Pill, New Look</a> · <a href="https://github.com/perezamadorluisenrique-gif/recall-radar">RecallRadar</a> · <a href="https://github.com/perezamadorluisenrique-gif/cert-radar">47-Day Cert Radar</a>. Found a problem? Open an issue on the app's repository.</p>
+  </footer>
+</main>
+<script src="/stats.js" defer></script>
+</body>
+</html>
