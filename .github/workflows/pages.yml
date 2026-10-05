@@ -1,0 +1,68 @@
+name: Test and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel a main deploy partway; superseded PR runs may be cancelled.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm test
+
+  # Pages may serve main or gh-pages; publishing the same files to gh-pages keeps
+  # either source correct (same pattern as the app repos).
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Collect site files
+        run: |
+          mkdir _site
+          cp index.html stats.js .nojekyll _site/
+          cp -r .well-known _site/
+      - name: Publish to gh-pages
+        working-directory: _site
+        run: |
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+
+  # Live check: the landing page and the asset links file Android verifies.
+  live:
+    if: github.ref == 'refs/heads/main'
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Pages and check
+        run: |
+          base=https://perezamadorluisenrique-gif.github.io
+          for i in $(seq 1 20); do
+            if curl -fsS "$base/" | grep -q "Hidden Problems Lab" \
+              && curl -fsS "$base/.well-known/assetlinks.json" | python3 -c "import json,sys; assert isinstance(json.load(sys.stdin), list)"; then
+              echo "live ok"; curl -sSI "$base/.well-known/assetlinks.json" | grep -i content-type; exit 0
+            fi
+            sleep 30
+          done
+          echo "live check failed"; exit 1
