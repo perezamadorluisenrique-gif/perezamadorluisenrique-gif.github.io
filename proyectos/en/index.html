@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enrique's projects</title>
+<meta name="description" content="A free Python textbook in Spanish, Linux booting in a browser tab and new terms for the OEIS.">
+<link rel="stylesheet" href="../estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Skip to content</a>
+<main id="contenido">
+<header class="portada">
+<p class="idioma"><a href="../" hreflang="es">Español</a></p>
+<h1>Enrique's projects</h1>
+<p class="entradilla">Three free projects: a book to learn Python (in Spanish), a RISC-V computer that boots Linux
+inside the browser, and new computations for the On-Line Encyclopedia of Integer Sequences.</p>
+</header>
+
+<ul class="proyectos">
+<li class="proyecto">
+<h2 id="libro">Introducción a la programación con Python</h2>
+<p>A free Spanish-language textbook: 15 chapters and 90 self-checking exercises solved in the browser with real Python
+(Pyodide), offline too. Read it online, install it as an app or download the PDF and EPUB. It is an adapted
+translation of an open textbook by OpenStax.</p>
+<div class="galeria">
+<figure><img src="../capturas/libro-inicio.jpg" width="1280" height="800" alt="The book's home page with four ways to read it: online, offline app, PDF and EPUB." loading="lazy"><figcaption>Home page: four ways to read it.</figcaption></figure>
+<figure><img src="../capturas/libro-ejercicio.jpg" width="1280" height="800" alt="A chapter 5 exercise solved in the app: code with a while loop and the result OK." loading="lazy"><figcaption>An exercise checked in the browser.</figcaption></figure>
+</div>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/libro-python-es/">Open the book</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/libro-python-es">Source on GitHub</a></li>
+</ul>
+</li>
+
+<li class="proyecto">
+<h2 id="linux">Linux en una pestaña (Linux in a tab)</h2>
+<p>A 32-bit RISC-V emulator written from scratch in TypeScript that boots Linux 6.1 in the page, with no server and no
+plugins, plus an eight-chapter course in Spanish that explains every piece: instructions, memory, interrupts, the
+serial device and the boot.</p>
+<figure><img src="../capturas/linux-terminal.jpg" width="1280" height="800" alt="The page's terminal after booting Linux: logged in as root, with uname -a reporting riscv32 GNU/Linux." loading="lazy"><figcaption>Linux booted in the tab, with <code>uname -a</code>.</figcaption></figure>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/linux-en-una-pestana/">Try it</a></li>
+<li><a href="https://perezamadorluisenrique-gif.github.io/linux-en-una-pestana/curso/">Read the course (Spanish)</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/linux-en-una-pestana">Source on GitHub</a></li>
+</ul>
+</li>
+
+<li class="proyecto">
+<h2 id="oeis">New terms for the OEIS</h2>
+<p>Thirteen <a href="https://oeis.org">OEIS</a> sequences extended, with about 20,000 new terms, and two corrected.
+Every term was computed by two independent programs that reproduce all published terms. Most count things in matrix
+groups over finite fields and cyclic subgroups of the symmetric and alternating groups. Submissions are made one at a
+time and reviewed by the OEIS editors.</p>
+<figure><img src="../capturas/oeis-tabla.jpg" width="1280" height="800" alt="Table of the thirteen sequences with what each counts, the range of new terms and links to their data." loading="lazy"><figcaption>The thirteen sequences and their data.</figcaption></figure>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/oeis-terminos/en/">See the sequences</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/oeis-terminos">Programs and data on GitHub</a></li>
+</ul>
+</li>
+</ul>
+</main>
+<footer><p>Made with help from an AI assistant (Claude) and checked by automated tests. Each project carries its license
+in its repository. This page: CC BY 4.0.</p></footer>
+</body>
+</html>

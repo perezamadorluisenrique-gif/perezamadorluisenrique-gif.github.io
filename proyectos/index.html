@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyectos de Enrique</title>
+<meta name="description" content="Un libro libre de Python en español, Linux arrancando en una pestaña del navegador y términos nuevos para la OEIS.">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<main id="contenido">
+<header class="portada">
+<p class="idioma"><a href="en/" hreflang="en">English</a></p>
+<h1>Proyectos de Enrique</h1>
+<p class="entradilla">Tres trabajos libres: un libro para aprender Python, un ordenador RISC-V que arranca Linux
+dentro del navegador y cálculos nuevos para la Enciclopedia en línea de secuencias de enteros.</p>
+</header>
+
+<ul class="proyectos">
+<li class="proyecto">
+<h2 id="libro">Introducción a la programación con Python</h2>
+<p>Libro de texto libre en español: 15 capítulos y 90 ejercicios autocorregidos que se resuelven en el navegador
+con Python de verdad (Pyodide), también sin conexión. Se puede leer en línea, instalar como app o descargar en PDF y EPUB.
+Es una traducción adaptada de un libro abierto de OpenStax.</p>
+<div class="galeria">
+<figure><img src="capturas/libro-inicio.jpg" width="1280" height="800" alt="Página de inicio del libro con las cuatro formas de leerlo: en línea, app sin conexión, PDF y EPUB." loading="lazy"><figcaption>Inicio: cuatro formas de leerlo.</figcaption></figure>
+<figure><img src="capturas/libro-ejercicio.jpg" width="1280" height="800" alt="Un ejercicio del capítulo 5 resuelto en la app: el código con un bucle while y el resultado OK." loading="lazy"><figcaption>Un ejercicio corregido en el navegador.</figcaption></figure>
+</div>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/libro-python-es/">Abrir el libro</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/libro-python-es">Código y texto en GitHub</a></li>
+</ul>
+</li>
+
+<li class="proyecto">
+<h2 id="linux">Linux en una pestaña</h2>
+<p>Un emulador RISC-V de 32 bits escrito desde cero en TypeScript que arranca Linux 6.1 en la página, sin servidor
+ni plugins, y un curso en español de ocho capítulos que explica cada pieza: instrucciones, memoria, interrupciones,
+el dispositivo serie y el arranque.</p>
+<figure><img src="capturas/linux-terminal.jpg" width="1280" height="800" alt="La terminal de la página tras arrancar Linux: inicio de sesión como root y la salida de uname -a, que dice riscv32 GNU/Linux." loading="lazy"><figcaption>Linux arrancado en la pestaña, con <code>uname -a</code>.</figcaption></figure>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/linux-en-una-pestana/">Probarlo</a></li>
+<li><a href="https://perezamadorluisenrique-gif.github.io/linux-en-una-pestana/curso/">Leer el curso</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/linux-en-una-pestana">Código en GitHub</a></li>
+</ul>
+</li>
+
+<li class="proyecto">
+<h2 id="oeis">Términos nuevos para la OEIS</h2>
+<p>Trece secuencias de la <a href="https://oeis.org">OEIS</a> ampliadas, con unos 20 000 términos nuevos, y dos
+corregidas. Cada término lo calcularon dos programas independientes que reproducen todo lo ya publicado. Casi todas
+cuentan cosas de grupos de matrices sobre cuerpos finitos y de subgrupos cíclicos de los grupos simétrico y alternado.
+Los envíos se hacen uno a uno y los revisan los editores de la OEIS.</p>
+<figure><img src="capturas/oeis-tabla.jpg" width="1280" height="800" alt="Tabla de las trece secuencias con lo que cuenta cada una, el rango de términos nuevos y enlaces a sus datos." loading="lazy"><figcaption>Las trece secuencias y sus datos.</figcaption></figure>
+<ul class="enlaces">
+<li><a href="https://perezamadorluisenrique-gif.github.io/oeis-terminos/">Ver las secuencias</a></li>
+<li><a href="https://github.com/perezamadorluisenrique-gif/oeis-terminos">Programas y datos en GitHub</a></li>
+</ul>
+</li>
+</ul>
+</main>
+<footer><p>Hechos con ayuda de un asistente de IA (Claude) y comprobados con pruebas automáticas. Cada proyecto lleva su
+licencia en su repositorio. Esta página: CC BY 4.0.</p></footer>
+</body>
+</html>
