@@ -1,6 +1,10 @@
-# perezamadorluisenrique-gif.github.io
+# CLAUDE.md
 
-User site for Hidden Problems Lab: the landing page linking the three apps, and
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this repo is
+
+`perezamadorluisenrique-gif.github.io`: user site for Hidden Problems Lab: the landing page linking the three apps, and
 `.well-known/assetlinks.json` for the Android TWAs (plan: `/mnt/project-files/apk-plan/apk-plan.md`).
 Live: https://perezamadorluisenrique-gif.github.io/
 Also hosts `plugin-inspector/`, the public Obsidian Plugin Inspector (any community plugin's
@@ -12,7 +16,10 @@ Project policy lives in `/mnt/project-files/autopilot/charter.md`.
 | Job | Command |
 |---|---|
 | Tests | `npm test` |
+| One test | `node --test --test-name-pattern '<name>' test/*.test.js` |
 | Serve | `npm start` (:8080) |
+
+No build step or dependencies: plain HTML and JS, deployed as-is. `plugin-inspector/inspect.js` is a UMD module (browser global and `module.exports` for the Node tests); `stats.js` is the GoatCounter counter, live host only, never the query string (tested).
 
 ## Rules
 - Same Pill never identifies a pill ("confirm with your pharmacist"); RecallRadar never calls a product safe; Cert Radar dates come from public CT logs.
