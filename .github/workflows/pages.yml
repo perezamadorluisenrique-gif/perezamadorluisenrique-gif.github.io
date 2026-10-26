@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir _site
           cp index.html stats.js .nojekyll _site/
-          cp -r .well-known _site/
+          cp -r .well-known plugin-inspector _site/
       - name: Publish to gh-pages
         working-directory: _site
         run: |
@@ -60,6 +60,8 @@ jobs:
           base=https://perezamadorluisenrique-gif.github.io
           for i in $(seq 1 20); do
             if curl -fsS "$base/" | grep -q "Hidden Problems Lab" \
+              && curl -fsS "$base/plugin-inspector/" | grep -q "Obsidian Plugin Inspector" \
+              && curl -fsS "$base/plugin-inspector/inspect.js" | grep -q "checkManifest" \
               && curl -fsS "$base/.well-known/assetlinks.json" | python3 -c "import json,sys; assert isinstance(json.load(sys.stdin), list)"; then
               echo "live ok"; curl -sSI "$base/.well-known/assetlinks.json" | grep -i content-type; exit 0
             fi
