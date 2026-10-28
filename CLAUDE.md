@@ -6,7 +6,7 @@ Live: https://perezamadorluisenrique-gif.github.io/
 Also hosts `plugin-inspector/`, the public Obsidian Plugin Inspector (any community plugin's
 downloads, rank, version chart, similar plugins, release health check; `?q=<id-or-owner/repo>` deep links):
 https://perezamadorluisenrique-gif.github.io/plugin-inspector/
-Project policy lives in `/mnt/project-files/autopilot/charter.md`.
+General rules: the owner's Claude project instructions. This file adds only what is specific to this repo.
 
 ## Commands
 | Job | Command |
@@ -17,7 +17,6 @@ Project policy lives in `/mnt/project-files/autopilot/charter.md`.
 ## Rules
 - Same Pill never identifies a pill ("confirm with your pharmacist"); RecallRadar never calls a product safe; Cert Radar dates come from public CT logs.
 - `assetlinks.json` lists only the three package ids in the test, each with both SHA-256 fingerprints (Play app signing key and upload key). A wrong file breaks every installed Android app's full-screen mode.
-- Work on a branch and open a PR; gates must be green before merge. Never skip a test.
 - Plugin Inspector: logic only in `plugin-inspector/inspect.js` (tested under Node in `test/plugin-inspector.test.js`), the page only fetches and renders; external text goes in with `textContent`, never `innerHTML`. Keep its checks in step with `obsidian-dev/tools/doctor` and `tools/release/review-lint.mjs`.
 
 ## Traps
