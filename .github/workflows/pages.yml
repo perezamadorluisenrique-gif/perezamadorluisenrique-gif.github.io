@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir _site
           cp index.html stats.js .nojekyll _site/
-          cp -r .well-known plugin-inspector _site/
+          cp -r .well-known plugin-inspector pro _site/
       - name: Publish to gh-pages
         working-directory: _site
         run: |

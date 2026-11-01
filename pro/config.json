@@ -1,0 +1,9 @@
+{
+  "provider": "",
+  "providers": { "polar": { "organizationId": "" }, "lemonsqueezy": { "storeId": "" }, "gumroad": {} },
+  "products": {
+    "book-studio-pro": { "name": "Book Studio Pro", "price": "59 USD", "checkoutUrl": "", "productId": "" },
+    "section-numbering-pro": { "name": "Section Numbering Pro", "price": "15 USD", "checkoutUrl": "", "productId": "" },
+    "update-radar-pro": { "name": "Update Radar Pro", "price": "9 USD", "checkoutUrl": "", "productId": "" }
+  }
+}
