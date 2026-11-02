@@ -14,6 +14,13 @@ const PRODUCTS = {
   'book-studio': 'book-studio-pro',
   'section-numbering': 'section-numbering-pro',
   'update-radar': 'update-radar-pro',
+  'kdp-book-vault': 'kdp-book-vault',
+  'thesis-vault': 'thesis-report-vault',
+};
+const PACKS = ['kdp-book-vault', 'thesis-vault'];
+const PRICES = {
+  'book-studio-pro': '59 USD', 'section-numbering-pro': '15 USD', 'update-radar-pro': '9 USD',
+  'kdp-book-vault': '12 USD', 'thesis-report-vault': '12 USD',
 };
 
 function htmlFiles(dir) {
@@ -29,7 +36,7 @@ test('config.json has the agreed shape and no ids filled in yet', () => {
   assert.deepStrictEqual(Object.keys(config.providers).sort(), ['gumroad', 'lemonsqueezy', 'polar']);
   assert.ok(['polar', 'lemonsqueezy', 'gumroad'].every((k) => typeof config.providers[k] === 'object'));
   assert.deepStrictEqual(Object.keys(config.products), Object.values(PRODUCTS));
-  const prices = { 'book-studio-pro': '59 USD', 'section-numbering-pro': '15 USD', 'update-radar-pro': '9 USD' };
+  const prices = PRICES;
   for (const [id, p] of Object.entries(config.products)) {
     assert.deepStrictEqual(Object.keys(p).sort(), ['checkoutUrl', 'name', 'price', 'productId']);
     assert.strictEqual(p.price, prices[id]);
@@ -69,6 +76,31 @@ test('product pages carry the sections, the buy hook and the signature', () => {
   }
 });
 
+test('every pro page links in its footer to all five products', () => {
+  for (const f of htmlFiles(proDir)) {
+    const h = fs.readFileSync(f, 'utf8');
+    const rel = path.relative(proDir, f);
+    const es = h.includes('<html lang="es">');
+    const foot = h.slice(h.indexOf('<footer>'));
+    for (const dir of Object.keys(PRODUCTS)) {
+      assert.ok(foot.includes(`href="/pro/${dir}/${es ? 'es/' : ''}"`), rel + ' footer links ' + dir);
+    }
+  }
+});
+
+test('pack pages say the free plugin is enough and promise no licence key or trial', () => {
+  const plugin = { 'kdp-book-vault': 'book-studio', 'thesis-vault': 'section-numbering' };
+  for (const dir of PACKS) {
+    for (const f of [dir + '/index.html', dir + '/es/index.html']) {
+      const h = read(f);
+      assert.ok(h.includes(`href="https://obsidian.md/plugins?id=${plugin[dir]}"`), f + ' links the free plugin in the directory');
+      assert.ok(!/licen[cs]e key|clave de licencia|free trial|prueba gratuita|14.day|14 días/i.test(h), f + ' promises a key or a trial');
+    }
+  }
+  assert.match(read('kdp-book-vault/index.html'), /Not affiliated with Amazon; KDP is a trademark of Amazon/);
+  assert.match(read('kdp-book-vault/es/index.html'), /No afiliado a Amazon; KDP es una marca de Amazon/);
+});
+
 test('buyState: empty, bad and good checkout URLs', () => {
   const mk = (checkoutUrl) => ({ products: { x: { name: 'X', price: '9 USD', checkoutUrl } } });
   assert.deepStrictEqual(core.buyState(mk(''), 'x', 'en'), { enabled: false, href: '', label: 'Coming soon' });
@@ -98,7 +130,7 @@ test('pro.js only writes external text with textContent', () => {
 
 test('no real-name text, no claude.ai, no analytics or third-party resources in pro/', () => {
   const files = htmlFiles(proDir);
-  assert.ok(files.length >= 8);
+  assert.ok(files.length >= 12);
   for (const f of files) {
     const h = fs.readFileSync(f, 'utf8');
     const rel = path.relative(proDir, f);
