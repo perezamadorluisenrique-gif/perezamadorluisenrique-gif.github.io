@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update Radar Pro: safe plugin updates for Obsidian</title>
+  <meta name="description" content="Update Radar Pro copies each plugin before it updates, restores earlier states and finds the plugin that breaks things. 14-day free trial, 9 USD one time.">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="alternate" hreflang="en" href="/pro/update-radar/">
+  <link rel="alternate" hreflang="es" href="/pro/update-radar/es/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23fbbf24' stroke-width='3'/%3E%3Cpath d='M22 22 L27 27' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/pro/pro.css">
+</head>
+<body>
+<main>
+  <nav class="topbar" aria-label="Navigation">
+    <a href="/pro/">&larr; All Pro plugins</a>
+    <a href="/pro/update-radar/es/" hreflang="es" lang="es">Español</a>
+  </nav>
+
+  <p class="eyebrow">Obsidian plugin</p>
+  <h1>Update Radar Pro</h1>
+  <p class="lead">Make plugin updates safe: a copy before every update, a way back to how everything was, and a guided search for the plugin that breaks something.</p>
+  <div class="buy-row"><a class="btn is-disabled" data-buy="update-radar-pro" aria-disabled="true">Coming soon</a> <span class="price" data-price="update-radar-pro">9 USD</span><span class="note">one-time payment</span></div>
+  <p class="note">You can try every Pro feature free for 14 days, without a key.</p>
+
+  <figure class="shot"><img src="shot.png" alt="Screenshot of Update Radar Pro in Obsidian" loading="lazy" onerror="this.parentNode.hidden=true"></figure>
+
+  <h2>What it does and who it is for</h2>
+  <p>Update Radar tells you which community plugins have an update. Pro is for people who keep many plugins and cannot afford a broken vault after an update: it copies each plugin first, lets you go back, and helps you find the culprit when something stops working.</p>
+  <p>It requires the free Update Radar plugin (0.5.0 or later).</p>
+
+  <h2>What Pro adds</h2>
+  <ul class="feat">
+    <li><strong>Copies before every update</strong>Before Update Radar installs an update, Pro copies the plugin's files into your configuration folder. Restore any copy later; the plugin reloads and Update Radar stops offering the newer version.</li>
+    <li><strong>Restore points</strong>The version of every plugin and which are on. Pro makes one before Update all, and Go back to a restore point shows what would change and asks first.</li>
+    <li><strong>Find the plugin causing a problem</strong>A guided search that turns plugins off and on in halves and asks whether the problem is still there, until one plugin is left. At the end your plugins are back as they were.</li>
+    <li><strong>Inspect an update</strong>Compares the new release with the installed one: size, new or gone web hosts, patterns worth a look and changes to the manifest. Hints, not verdicts; nothing is run.</li>
+    <li><strong>Summary of release notes</strong>Writes one note with the release notes of up to 20 waiting updates, with links and code escaped for safety.</li>
+    <li><strong>Update rules</strong>Per plugin: all updates, minor and major only, major only or pinned, plus a wait of 1 to 30 days.</li>
+  </ul>
+
+  <h2>What stays free, for good</h2>
+  <div class="free">
+    <ul class="plain"><li>Updates in the status bar and a list of what changed, with release notes.</li><li>Update one plugin or all, ignore a version, snooze a plugin, wait before an update is offered.</li><li>Go back to an earlier version of a plugin.</li><li>Compatibility checks and plugin health flags (removed, abandoned, not from the directory).</li></ul>
+    <p>Nothing in the free plugin moves into Pro. After the trial ends, restoring copies and restore points, the search, and deleting copies keep working for good; making new copies, inspecting, summaries and rules need a key.</p>
+    <p><a href="https://obsidian.md/plugins?id=update-radar">Update Radar in the community directory</a></p>
+  </div>
+
+  <h2>Price and free trial</h2>
+  <p><span class="price" data-price="update-radar-pro">9 USD</span>, one-time payment. You can try every Pro feature free for 14 days, without a key.</p>
+  <p>One-time payment. No subscription. The code is open source (MIT); buying a key is a purchase receipt that keeps it maintained, not copy protection.</p>
+  <div class="buy-row"><a class="btn is-disabled" data-buy="update-radar-pro" aria-disabled="true">Coming soon</a></div>
+
+  <h2>How to activate</h2>
+  <ol class="steps"><li>Buy with the button on this page. The payment service sends your licence key in the receipt email.</li><li>Open the plugin's settings in Obsidian and paste the key.</li><li>Press Activate.</li></ol>
+
+  <h2>Network and privacy</h2>
+  <ul class="plain"><li>Copies and restore points are plain files in your vault. Nothing is sent anywhere.</li><li>Apart from the licence check, the only download is when you ask to inspect an update: it fetches main.js and manifest.json of that release from github.com.</li><li>The licence check: when you press Activate, the plugin sends the key, once, to the licence endpoint of the payment service. After that it is saved on your device and nothing is checked again.</li><li>No telemetry, no analytics, no accounts, no self-update. This page has no cookies and loads nothing from other sites.</li></ul>
+
+  <h2>Refunds</h2>
+  <p>Payments and refunds are handled by the payment service. Its terms, shown at checkout, apply.</p>
+
+  <h2>Questions</h2>
+  <details><summary>Do I need the free plugin?</summary><p>Yes. Update Radar Pro requires the free Update Radar plugin (0.5.0 or later) and must be running for copies before updates, rules and the summary.</p></details>
+  <details><summary>Can copies contain secrets?</summary><p>A plugin's data.json may hold tokens or passwords, and a copy is a plain file. Turn Include data.json off if you do not want that. Delete all snapshots removes everything.</p></details>
+  <details><summary>What happens when the trial ends?</summary><p>Restoring, going back to a restore point, the search and deleting copies keep working. New copies, inspecting, summaries and rules need a key.</p></details>
+  <details><summary>Does it update plugins by itself?</summary><p>No. It never installs or updates a plugin without your click.</p></details>
+
+  <footer>
+    <p>More Pro plugins: <a href="/pro/book-studio/">Book Studio Pro</a> · <a href="/pro/section-numbering/">Section Numbering Pro</a> · <a href="/pro/update-radar/">Update Radar Pro</a></p>
+    <p>Open source, no telemetry, works offline.</p>
+    <p>Made by Siulved54</p>
+  </footer>
+</main>
+<script src="/pro/pro-core.js" defer></script>
+<script src="/pro/pro.js" defer></script>
+</body>
+</html>
