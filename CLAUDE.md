@@ -1,7 +1,7 @@
 # perezamadorluisenrique-gif.github.io
 
 User site for Hidden Problems Lab: the landing page linking the three apps, and
-`.well-known/assetlinks.json` for the Android TWAs (plan: `/mnt/project-files/apk-plan/apk-plan.md`).
+`.well-known/assetlinks.json` for the Android TWAs.
 Live: https://perezamadorluisenrique-gif.github.io/
 Also hosts `plugin-inspector/`, the public Obsidian Plugin Inspector (any community plugin's
 downloads, rank, version chart, similar plugins, release health check; `?q=<id-or-owner/repo>` deep links):
