@@ -121,3 +121,29 @@ test('the Pages deploy ships the inspector and the landing page links it', () =>
   assert.match(yml, /cp -r [^\n]*plugin-inspector[^\n]*_site\//);
   assert.ok(fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8').includes('href="/plugin-inspector/"'));
 });
+
+test('the CLI checks a local folder with the same rules as the page', () => {
+  const os = require('node:os');
+  const cli = require('../plugin-inspector/cli.js');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pi-cli-'));
+  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({
+    id: 'my-obsidian-tool', name: 'Tool', version: '1.0', minAppVersion: '1.0.0', description: 'This plugin does x', author: 'a',
+  }));
+  const checks = cli.run(cli.gatherLocal(dir), {});
+  const failed = checks.filter((c) => c.level === 'fail').map((c) => c.label);
+  assert.ok(failed.includes('No "obsidian" in id'));
+  assert.ok(failed.includes('version is x.y.z'));
+  assert.ok(failed.includes('README.md'));
+  assert.match(cli.format(checks, 'x'), /✗ version is x\.y\.z/);
+  assert.doesNotMatch(cli.format(checks, 'x'), /✓/); // passes are hidden
+  assert.ok(!checks.some((c) => /release/i.test(c.label)), 'no release check offline');
+});
+
+test('the CLI exits 2 with no arguments and 1 when a check fails', async () => {
+  const cli = require('../plugin-inspector/cli.js');
+  const log = console.log; console.log = () => {};
+  try {
+    assert.strictEqual(await cli.main([]), 2);
+    assert.strictEqual(await cli.main([fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'pi-empty-')), '--offline']), 1);
+  } finally { console.log = log; }
+});
