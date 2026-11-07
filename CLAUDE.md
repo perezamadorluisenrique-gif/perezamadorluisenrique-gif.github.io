@@ -13,6 +13,7 @@ General rules: the owner's Claude project instructions. This file adds only what
 |---|---|
 | Tests | `npm test` |
 | Serve | `npm start` (:8080) |
+| Inspector CLI (same checks, on a local folder or owner/repo; exit 1 on fail) | `node plugin-inspector/cli.js <folder\|owner/repo> [--json] [--offline]` |
 
 ## Rules
 - Same Pill never identifies a pill ("confirm with your pharmacist"); RecallRadar never calls a product safe; Cert Radar dates come from public CT logs.
