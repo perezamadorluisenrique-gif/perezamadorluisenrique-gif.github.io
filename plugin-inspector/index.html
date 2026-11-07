@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obsidian Plugin Inspector</title>
+  <meta name="description" content="Look up any Obsidian community plugin: downloads, rank, version history, similar plugins and a release health check. Paste a GitHub repo to check it before you submit.">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='14' cy='14' r='7' fill='none' stroke='%23a78bfa' stroke-width='3'/%3E%3Cpath d='M19 19 L26 26' stroke='%23a78bfa' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #f7f7f5; --card: #ffffff; --text: #1f2937; --muted: #4b5563; --line: #e5e7eb; --link: #1d4ed8;
+      --accent: #6d28d9; --accent-soft: #ede9fe; --pass: #047857; --warn: #b45309; --fail: #b91c1c; --bar: #7c3aed;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --bg: #111827; --card: #1f2937; --text: #f3f4f6; --muted: #d1d5db; --line: #374151; --link: #93c5fd;
+        --accent: #c4b5fd; --accent-soft: #2e1065; --pass: #34d399; --warn: #fbbf24; --fail: #f87171; --bar: #a78bfa; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 820px; margin: 0 auto; padding: 32px 16px 48px; }
+    h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 6px; }
+    .lead { color: var(--muted); margin: 0 0 20px; }
+    a { color: var(--link); }
+    .search { position: relative; }
+    .search input { width: 100%; font: inherit; font-size: 1.05rem; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); }
+    .search input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .hint { color: var(--muted); font-size: 0.9rem; margin: 6px 2px 0; }
+    .hint button { font: inherit; background: none; border: 0; padding: 0; color: var(--link); text-decoration: underline; cursor: pointer; }
+    [role="listbox"] { position: absolute; z-index: 5; left: 0; right: 0; top: 52px; margin: 0; padding: 4px; list-style: none; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
+    [role="option"] { padding: 8px 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; }
+    [role="option"][aria-selected="true"], [role="option"]:hover { background: var(--accent-soft); }
+    [role="option"] small { color: var(--muted); white-space: nowrap; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-top: 20px; }
+    .card h2 { font-size: 1.35rem; margin: 0; overflow-wrap: anywhere; }
+    .card h3 { font-size: 1rem; margin: 0 0 10px; }
+    .by { color: var(--muted); margin: 2px 0 8px; font-size: 0.95rem; }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0 4px; }
+    .tile { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .tile b { display: block; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+    .tile span { color: var(--muted); font-size: 0.85rem; }
+    .chart { width: 100%; height: auto; display: block; }
+    .chart text { fill: var(--muted); }
+    .chart rect { fill: var(--bar); }
+    .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .checks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; }
+    .checks .ic { font-weight: 700; text-align: center; }
+    .pass .ic { color: var(--pass); } .warn .ic { color: var(--warn); } .fail .ic { color: var(--fail); }
+    .checks small { display: block; color: var(--muted); }
+    .score { display: flex; gap: 14px; flex-wrap: wrap; margin: 0 0 12px; font-size: 0.95rem; }
+    .score .pass { color: var(--pass); } .score .warn { color: var(--warn); } .score .fail { color: var(--fail); }
+    .similar { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .similar button { width: 100%; text-align: left; font: inherit; color: inherit; background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; }
+    .similar button:hover { border-color: var(--accent); }
+    .similar small { color: var(--muted); grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .actions button, .actions a { font: inherit; font-size: 0.92rem; padding: 7px 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; text-decoration: none; }
+    .actions button:hover, .actions a:hover { border-color: var(--accent); }
+    .status { color: var(--muted); margin-top: 20px; }
+    .error { color: var(--fail); }
+    footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Obsidian Plugin Inspector</h1>
+  <p class="lead">Look up any Obsidian community plugin to see its downloads, rank, version history and similar plugins, with a release health check. Paste a GitHub repository to check a plugin before you submit it.</p>
+
+  <form class="search" id="form" role="search" autocomplete="off">
+    <label for="q" class="sr">Plugin name, id or GitHub repository</label>
+    <input id="q" name="q" type="search" placeholder="Plugin name, id, or owner/repo" role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" disabled>
+    <ul id="suggest" role="listbox" hidden></ul>
+    <p class="hint">Try <button type="button" data-q="dataview">Dataview</button>, <button type="button" data-q="section-numbering">Section Numbering</button> or <button type="button" data-q="obsidianmd/obsidian-sample-plugin">obsidianmd/obsidian-sample-plugin</button>.</p>
+  </form>
+
+  <p class="status" id="status" role="status">Loading the plugin directory…</p>
+  <div id="out"></div>
+
+  <footer>
+    <p>Data comes straight from your browser to GitHub: the directory's public <a href="https://github.com/obsidianmd/obsidian-releases">obsidian-releases</a> files and each plugin's repository. Download counts are the ones Obsidian publishes, refreshed about once a day. Unofficial; not affiliated with Obsidian.</p>
+    <p>Made by <a href="/">Hidden Problems Lab</a> · <a href="https://github.com/perezamadorluisenrique-gif/perezamadorluisenrique-gif.github.io">Source</a></p>
+  </footer>
+</main>
+<script src="inspect.js"></script>
+<script>
+(function () {
+  'use strict';
+  var I = window.Inspect;
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $('q'), list = $('suggest'), out = $('out'), status = $('status');
+  var plugins = [], stats = {}, byId = new Map(), rank = new Map(), ids = new Set(), names = new Set(), removed = new Set();
+  var active = -1, options = [], token = 0;
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'text') n.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return n;
+  }
+
+  function getJson(url) {
+    return fetch(url).then(function (r) {
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? 'GitHub rate limit reached; try again in a few minutes.' : 'HTTP ' + r.status);
+      return r.json();
+    });
+  }
+  function getText(url) {
+    return fetch(url).then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
+  }
+  function rawFile(repo, path) { return I.RAW + repo + '/HEAD/' + path; }
+
+  // Suggestions
+  function suggest() {
+    var q = input.value.trim();
+    var parsed = I.parseQuery(q);
+    options = parsed.repo ? [] : I.search(q, plugins, stats, 8);
+    list.textContent = '';
+    active = -1;
+    options.forEach(function (p, i) {
+      list.appendChild(el('li', { role: 'option', id: 'opt-' + i, 'aria-selected': 'false', onmousedown: function (e) { e.preventDefault(); choose(p.id); } },
+        [el('span', { text: p.name }), el('small', { text: I.formatNumber(stats[p.id] && stats[p.id].downloads) + ' ↓' })]));
+    });
+    var show = options.length > 0 && document.activeElement === input;
+    list.hidden = !show;
+    input.setAttribute('aria-expanded', String(show));
+  }
+  function move(d) {
+    if (!options.length) return;
+    active = (active + d + options.length) % options.length;
+    Array.prototype.forEach.call(list.children, function (li, i) { li.setAttribute('aria-selected', String(i === active)); });
+    input.setAttribute('aria-activedescendant', 'opt-' + active);
+  }
+  function choose(q) {
+    input.value = q;
+    list.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    inspect(q);
+  }
+
+  // Inspection
+  function inspect(q) {
+    var mine = ++token;
+    var parsed = I.parseQuery(q);
+    var url = new URL(location.href);
+    url.searchParams.set('q', q.trim());
+    history.replaceState(null, '', url);
+    out.textContent = '';
+    var listed = parsed.id ? byId.get(parsed.id) || I.search(parsed.id, plugins, stats, 1)[0] : plugins.find(function (p) { return p.repo.toLowerCase() === parsed.repo.toLowerCase(); });
+    if (!listed && parsed.id) {
+      var gone = removed.has(parsed.id);
+      status.textContent = gone ? '"' + q + '" was removed from the directory.' : 'No plugin matches "' + q + '". To check one that is not listed yet, enter its GitHub repository as owner/repo.';
+      return;
+    }
+    var repo = listed ? listed.repo : parsed.repo;
+    status.textContent = listed ? '' : repo + ' is not in the directory yet: running the pre-submission check.';
+    if (listed) document.title = listed.name + ' · Obsidian Plugin Inspector';
+    var cardOverview = listed ? overview(listed) : null;
+    if (cardOverview) out.appendChild(cardOverview);
+    var health = el('section', { class: 'card', 'aria-busy': 'true' }, [el('h3', { text: 'Release health check' }), el('p', { class: 'by', text: 'Reading ' + repo + '…' })]);
+    out.appendChild(health);
+    if (listed) out.appendChild(similarCard(listed));
+
+    Promise.all([
+      getJson(rawFile(repo, 'manifest.json')).catch(function () { return null; }),
+      getJson(rawFile(repo, 'versions.json')).catch(function () { return null; }),
+      getText(rawFile(repo, 'README.md')).then(function (t) { return t !== null ? t : getText(rawFile(repo, 'readme.md')); }),
+      getText(rawFile(repo, 'LICENSE')).then(function (t) { return t !== null ? t : getText(rawFile(repo, 'LICENSE.md')); }),
+      getJson('https://api.github.com/repos/' + repo + '/releases/latest').catch(function (e) { return { error: e.message }; }),
+    ]).then(function (r) {
+      if (mine !== token) return;
+      var manifest = r[0];
+      var checks = I.checkManifest(manifest, { listed: listed, ids: ids, names: names, removed: removed })
+        .concat(manifest ? I.checkRepo({ manifest: manifest, versions: r[1], readme: r[2], license: r[3], release: r[4] }) : []);
+      renderChecks(health, repo, checks, manifest);
+      if (!listed && manifest) out.appendChild(similarCard({ id: manifest.id, name: manifest.name || '', description: manifest.description || '' }, true));
+    });
+  }
+
+  function overview(p) {
+    var s = stats[p.id] || { downloads: 0 };
+    var versions = I.versionsOf(s);
+    var r = rank.get(p.id);
+    var top = r ? Math.max(0.1, Math.round((r / plugins.length) * 1000) / 10) : null;
+    var link = 'https://obsidian.md/plugins?id=' + encodeURIComponent(p.id);
+    var card = el('section', { class: 'card' }, [
+      el('h2', { text: p.name }),
+      el('p', { class: 'by' }, ['by ' + p.author + ' · ', el('code', { text: p.id }), ' · ', el('a', { href: 'https://github.com/' + p.repo, text: p.repo })]),
+      el('p', { text: p.description }),
+      el('div', { class: 'tiles' }, [
+        tile(I.formatNumber(s.downloads), 'downloads'),
+        tile(r ? '#' + I.formatNumber(r) : '–', 'of ' + I.formatNumber(plugins.length) + ' plugins'),
+        tile(top !== null ? 'Top ' + top + '%' : '–', 'by downloads'),
+        tile(s.updated ? I.ago(s.updated) : '–', 'last release'),
+        tile(String(versions.length), versions.length === 1 ? 'release' : 'releases'),
+      ]),
+    ]);
+    if (versions.length > 1) card.appendChild(chart(versions.slice(-24)));
+    card.appendChild(el('div', { class: 'actions' }, [
+      el('a', { href: link, text: 'Open in the directory' }),
+      el('a', { href: 'obsidian://show-plugin?id=' + encodeURIComponent(p.id), text: 'Open in Obsidian' }),
+      copyButton('Copy share link', function () { return location.href; }),
+      copyButton('Copy downloads badge', function () { return I.badgeMarkdown(p.id); }),
+    ]));
+    return card;
+  }
+
+  function tile(value, label) { return el('div', { class: 'tile' }, [el('b', { text: value }), el('span', { text: label })]); }
+
+  function copyButton(label, get) {
+    var b = el('button', { type: 'button', text: label });
+    b.addEventListener('click', function () {
+      var done = function (ok) { b.textContent = ok ? 'Copied' : 'Copy failed'; setTimeout(function () { b.textContent = label; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(get()).then(function () { done(true); }, function () { done(false); });
+      else done(false);
+    });
+    return b;
+  }
+
+  // Downloads per version: newest on the right.
+  function chart(versions) {
+    var w = 760, h = 150, pad = 18, max = Math.max.apply(null, versions.map(function (v) { return v.downloads; })) || 1;
+    var bw = (w - pad) / versions.length;
+    // Labels stay readable on a phone: font scaled up to the shrink, fewer of them.
+    var shown = Math.max(1, out.clientWidth - 36);
+    var scale = Math.max(1, w / shown);
+    var label = Math.ceil(versions.length / Math.max(3, Math.floor(shown / 70)));
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + (h + 20 + 12 * scale));
+    svg.setAttribute('class', 'chart');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Downloads per version for the last ' + versions.length + ' versions');
+    versions.forEach(function (v, i) {
+      var bh = Math.max(2, (v.downloads / max) * (h - pad));
+      var x = pad / 2 + i * bw + bw * 0.12;
+      var rect = document.createElementNS(svg.namespaceURI, 'rect');
+      rect.setAttribute('x', x); rect.setAttribute('y', h - bh); rect.setAttribute('width', bw * 0.76); rect.setAttribute('height', bh); rect.setAttribute('rx', 3);
+      var t = document.createElementNS(svg.namespaceURI, 'title');
+      t.textContent = v.version + ': ' + I.formatNumber(v.downloads) + ' downloads';
+      rect.appendChild(t);
+      svg.appendChild(rect);
+      var last = versions.length - 1;
+      if ((i % label === 0 && last - i >= Math.ceil(label * 0.7)) || i === last) {
+        var tx = document.createElementNS(svg.namespaceURI, 'text');
+        var edge = i === 0 ? 'start' : i === versions.length - 1 ? 'end' : 'middle';
+        tx.setAttribute('x', edge === 'start' ? x : edge === 'end' ? x + bw * 0.76 : x + bw * 0.38); tx.setAttribute('y', h + 12 + 10 * scale); tx.setAttribute('text-anchor', edge); tx.setAttribute('font-size', String(Math.round(10 * scale)));
+        tx.textContent = v.version;
+        svg.appendChild(tx);
+      }
+    });
+    return el('figure', { style: 'margin:14px 0 0' }, [svg, el('figcaption', { class: 'by', text: 'Downloads per version (hover a bar for the number).' })]);
+  }
+
+  function renderChecks(card, repo, checks, manifest) {
+    card.removeAttribute('aria-busy');
+    card.textContent = '';
+    var s = I.summary(checks);
+    var order = { fail: 0, warn: 1, pass: 2 };
+    checks.sort(function (a, b) { return order[a.level] - order[b.level]; });
+    var icon = { pass: '✓', warn: '!', fail: '✗' };
+    card.appendChild(el('h3', { text: 'Release health check' }));
+    card.appendChild(el('p', { class: 'score' }, [
+      el('span', { class: 'fail', text: s.fail + ' to fix' }), el('span', { class: 'warn', text: s.warn + ' to review' }), el('span', { class: 'pass', text: s.pass + ' passed' }),
+      el('span', { class: 'by', text: manifest ? 'manifest ' + manifest.version : '' }),
+    ]));
+    card.appendChild(el('ul', { class: 'checks' }, checks.map(function (c) {
+      return el('li', { class: c.level }, [el('span', { class: 'ic', 'aria-label': c.level, text: icon[c.level] }), el('div', {}, [c.label, c.detail ? el('small', { text: c.detail }) : null])]);
+    })));
+    card.appendChild(el('p', { class: 'by', style: 'margin-top:12px' }, ['Checked live from ', el('a', { href: 'https://github.com/' + repo, text: repo }), '. These are the rules the directory and its automated review apply most often; passing them does not guarantee approval.']));
+  }
+
+  function similarCard(target, unlisted) {
+    var sims = I.similar(target, plugins, 6, stats);
+    var card = el('section', { class: 'card' }, [el('h3', { text: unlisted ? 'Plugins that already do something similar' : 'Similar plugins' })]);
+    if (!sims.length) { card.appendChild(el('p', { class: 'by', text: 'Nothing close by name or description.' })); return card; }
+    card.appendChild(el('ul', { class: 'similar' }, sims.map(function (x) {
+      var p = x.plugin;
+      return el('li', {}, [el('button', { type: 'button', onclick: function () { choose(p.id); window.scrollTo({ top: 0, behavior: 'smooth' }); } }, [
+        el('b', { text: p.name }), el('span', { class: 'by', text: I.formatNumber(stats[p.id] && stats[p.id].downloads) + ' ↓' }), el('small', { text: p.description }),
+      ])]);
+    })));
+    return card;
+  }
+
+  // Wiring
+  input.addEventListener('input', suggest);
+  input.addEventListener('focus', suggest);
+  input.addEventListener('blur', function () { list.hidden = true; input.setAttribute('aria-expanded', 'false'); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+    else if (e.key === 'Escape') { list.hidden = true; }
+    else if (e.key === 'Enter' && active >= 0 && !list.hidden) { e.preventDefault(); choose(options[active].id); }
+  });
+  $('form').addEventListener('submit', function (e) { e.preventDefault(); if (input.value.trim()) choose(input.value.trim()); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-q]'), function (b) { b.addEventListener('click', function () { choose(b.getAttribute('data-q')); }); });
+
+  Promise.all([
+    getJson(I.DIRECTORY + 'community-plugins.json'),
+    getJson(I.DIRECTORY + 'community-plugin-stats.json'),
+    getJson(I.DIRECTORY + 'community-plugins-removed.json').catch(function () { return []; }),
+  ]).then(function (r) {
+    plugins = r[0] || []; stats = r[1] || {};
+    plugins.forEach(function (p) { byId.set(p.id.toLowerCase(), p); ids.add(p.id); names.add(p.name.toLowerCase()); });
+    (r[2] || []).forEach(function (p) { removed.add(p.id); });
+    rank = I.ranks(stats);
+    input.disabled = false;
+    status.textContent = I.formatNumber(plugins.length) + ' plugins loaded.';
+    var q = new URLSearchParams(location.search).get('q');
+    if (q) { input.value = q; inspect(q); } else input.focus();
+  }).catch(function (e) {
+    status.textContent = 'Could not load the plugin directory from GitHub (' + e.message + '). Check your connection and reload.';
+    status.className = 'status error';
+  });
+})();
+</script>
+<script src="/stats.js" defer></script>
+</body>
+</html>
