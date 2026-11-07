@@ -57,7 +57,8 @@ test('landing page keeps the domain safety wording', () => {
 test('every local file the landing page references exists in this repo or is an app path', () => {
   const html = read('index.html');
   const refs = [...html.matchAll(/(?:src|href)="(\/[^"]*)"/g)].map((m) => m[1]);
-  const appPaths = /^\/(same-pill-new-look|recall-radar|cert-radar)\//;
+  // /catalog/ is generated at deploy time by catalog/build.mjs.
+  const appPaths = /^\/(same-pill-new-look|recall-radar|cert-radar|catalog)\//;
   for (const ref of refs) {
     if (appPaths.test(ref)) continue;
     assert.ok(fs.existsSync(path.join(root, ref)), `missing ${ref}`);

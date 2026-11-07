@@ -13,12 +13,18 @@ General rules: the owner's Claude project instructions. This file adds only what
 |---|---|
 | Tests | `npm test` |
 | Serve | `npm start` (:8080) |
+| Catalog (one page per free product, sitemap, robots; reads each repo's README and manifest) | `node catalog/build.mjs --out /tmp/site [--local <dir with the clones>]` |
 | Inspector CLI (same checks, on a local folder or owner/repo; exit 1 on fail) | `node plugin-inspector/cli.js <folder\|owner/repo> [--json] [--offline]` |
 
 ## Rules
 - Same Pill never identifies a pill ("confirm with your pharmacist"); RecallRadar never calls a product safe; Cert Radar dates come from public CT logs.
 - `assetlinks.json` lists only the three package ids in the test, each with both SHA-256 fingerprints (Play app signing key and upload key). A wrong file breaks every installed Android app's full-screen mode.
 - Plugin Inspector: logic only in `plugin-inspector/inspect.js` (tested under Node in `test/plugin-inspector.test.js`), the page only fetches and renders; external text goes in with `textContent`, never `innerHTML`. Keep its checks in step with `obsidian-dev/tools/doctor` and `tools/release/review-lint.mjs`.
+
+## Catalog
+- `/catalog/` is generated, never committed: `catalog/products.json` lists the products, `catalog/build.mjs` writes pages, `sitemap.xml` and `robots.txt` into `_site` on every deploy and daily (`schedule` in `pages.yml`), so a release shows up within a day. A new product is one line in `products.json`; `optional: true` skips it until it exists (the three pending WordPress plugins).
+- Video: `catalog/video/<slug>.mp4` (real Obsidian captures, committed) wins; else a README GIF becomes MP4; else the README's first image. Pro and prices never appear there.
+- The build validates every page (title, description, one h1, OG, alt, JSON-LD, canonical in the sitemap) and exits 1 on a problem.
 
 ## Traps
 - Never add a folder named after an app repo: the project site at that path wins.

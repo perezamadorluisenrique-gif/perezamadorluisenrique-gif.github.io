@@ -1,0 +1,260 @@
+{
+ "owner": "perezamadorluisenrique-gif",
+ "site": "https://perezamadorluisenrique-gif.github.io",
+ "products": [
+  {
+   "slug": "shared-blocks",
+   "kind": "obsidian",
+   "repo": "shared-blocks",
+   "name": "Shared Blocks"
+  },
+  {
+   "slug": "text-format",
+   "kind": "obsidian",
+   "repo": "text-format",
+   "name": "Text Case and Cleanup"
+  },
+  {
+   "slug": "typography-as-you-type",
+   "kind": "obsidian",
+   "repo": "smart-typography-plugin",
+   "name": "Typography as You Type"
+  },
+  {
+   "slug": "section-numbering",
+   "kind": "obsidian",
+   "repo": "section-numbering",
+   "name": "Section Numbering"
+  },
+  {
+   "slug": "spreadsheet-to-table",
+   "kind": "obsidian",
+   "repo": "spreadsheet-to-table",
+   "name": "Spreadsheet to Table"
+  },
+  {
+   "slug": "hybrid-line-numbers",
+   "kind": "obsidian",
+   "repo": "hybrid-line-numbers",
+   "name": "Hybrid Line Numbers"
+  },
+  {
+   "slug": "list-item-callouts",
+   "kind": "obsidian",
+   "repo": "list-item-callouts",
+   "name": "List Item Callouts"
+  },
+  {
+   "slug": "folder-counts",
+   "kind": "obsidian",
+   "repo": "folder-counts",
+   "name": "Folder Counts"
+  },
+  {
+   "slug": "note-reading-time",
+   "kind": "obsidian",
+   "repo": "note-reading-time",
+   "name": "Note Reading Time"
+  },
+  {
+   "slug": "task-rollover",
+   "kind": "obsidian",
+   "repo": "task-rollover",
+   "name": "Task Rollover"
+  },
+  {
+   "slug": "zoom-into-section",
+   "kind": "obsidian",
+   "repo": "zoom-into-section",
+   "name": "Zoom Into Section"
+  },
+  {
+   "slug": "link-title-on-paste",
+   "kind": "obsidian",
+   "repo": "link-title-on-paste",
+   "name": "Link Title on Paste"
+  },
+  {
+   "slug": "update-radar",
+   "kind": "obsidian",
+   "repo": "community-update-checker",
+   "name": "Update Radar"
+  },
+  {
+   "slug": "dataview-to-bases",
+   "kind": "obsidian",
+   "repo": "dataview-to-bases",
+   "name": "Dataview to Bases"
+  },
+  {
+   "slug": "line-editing-commands",
+   "kind": "obsidian",
+   "repo": "line-editing-commands",
+   "name": "Line Editing Commands"
+  },
+  {
+   "slug": "note-mover-rules",
+   "kind": "obsidian",
+   "repo": "note-mover-rules",
+   "name": "Note Mover Rules"
+  },
+  {
+   "slug": "tab-history",
+   "kind": "obsidian",
+   "repo": "tab-history",
+   "name": "Tab History"
+  },
+  {
+   "slug": "url-cards",
+   "kind": "obsidian",
+   "repo": "url-cards",
+   "name": "URL Cards"
+  },
+  {
+   "slug": "vim-config",
+   "kind": "obsidian",
+   "repo": "vim-config",
+   "name": "Vim Config"
+  },
+  {
+   "slug": "task-archive",
+   "kind": "obsidian",
+   "repo": "task-archive",
+   "name": "Task Archive"
+  },
+  {
+   "slug": "revisit-later",
+   "kind": "obsidian",
+   "repo": "revisit-later",
+   "name": "Revisit Later"
+  },
+  {
+   "slug": "explorer-colors-plus",
+   "kind": "obsidian",
+   "repo": "explorer-colors-plus",
+   "name": "Explorer Colors Plus"
+  },
+  {
+   "slug": "book-lookup",
+   "kind": "obsidian",
+   "repo": "book-lookup",
+   "name": "Book Lookup"
+  },
+  {
+   "slug": "web-search-menu",
+   "kind": "obsidian",
+   "repo": "web-search-menu",
+   "name": "Web Search Menu"
+  },
+  {
+   "slug": "word-lookup",
+   "kind": "obsidian",
+   "repo": "word-lookup",
+   "name": "Word Lookup"
+  },
+  {
+   "slug": "quick-translate",
+   "kind": "obsidian",
+   "repo": "quick-translate",
+   "name": "Quick Translate"
+  },
+  {
+   "slug": "dice-rolls",
+   "kind": "obsidian",
+   "repo": "dice-rolls",
+   "name": "Dice Rolls"
+  },
+  {
+   "slug": "claude-studio",
+   "kind": "obsidian",
+   "repo": "claude-studio",
+   "name": "Claude Studio"
+  },
+  {
+   "slug": "book-studio",
+   "kind": "obsidian",
+   "repo": "book-studio",
+   "name": "Book Studio"
+  },
+  {
+   "slug": "emoji-search",
+   "kind": "obsidian",
+   "repo": "emoji-search",
+   "name": "Emoji Search"
+  },
+  {
+   "slug": "inline-toc",
+   "kind": "obsidian",
+   "repo": "inline-toc",
+   "name": "Inline TOC"
+  },
+  {
+   "slug": "random-note-filters",
+   "kind": "obsidian",
+   "repo": "random-note-filters",
+   "name": "Random Note Filters",
+   "optional": true
+  },
+  {
+   "slug": "linkvane",
+   "kind": "wordpress",
+   "wpSlug": "linkvane",
+   "name": "Linkvane",
+   "playground": "https://playground.wordpress.net/?plugin=linkvane&blueprint-url=https://ps.w.org/linkvane/assets/blueprints/blueprint.json"
+  },
+  {
+   "slug": "update-airlock",
+   "kind": "wordpress",
+   "wpSlug": "update-airlock",
+   "name": "Update Airlock",
+   "optional": true
+  },
+  {
+   "slug": "readwell-bar",
+   "kind": "wordpress",
+   "wpSlug": "readwell-bar",
+   "name": "Readwell Bar",
+   "optional": true
+  },
+  {
+   "slug": "child-theme-maker",
+   "kind": "wordpress",
+   "wpSlug": "child-theme-maker",
+   "name": "Child Theme Maker",
+   "optional": true
+  },
+  {
+   "slug": "claimable",
+   "kind": "cli",
+   "repo": "claimable",
+   "name": "claimable",
+   "tagline": "Tells you whether a GitHub issue is really free to work on, before you start.",
+   "install": {
+    "label": "npx claimable",
+    "url": "https://www.npmjs.com/package/claimable"
+   },
+   "web": "/claimable/"
+  },
+  {
+   "slug": "book-studio-web",
+   "kind": "web",
+   "repo": "book-studio",
+   "name": "Book Studio for the web",
+   "tagline": "Turn Markdown notes into a KDP print PDF and an accessible EPUB 3, in your browser, with nothing uploaded.",
+   "web": "/book-studio/",
+   "mediaFrom": "docs/screenshot.png",
+   "intro": [
+    "Book Studio for the web is the browser version of the Book Studio plugin. Open a folder of Markdown notes, or write and import a manuscript (.md, .txt or Word .docx), and export a print-ready PDF interior for Amazon KDP and an EPUB 3 that passes EPUBCheck.",
+    "Everything runs in your browser. Nothing is uploaded, and there is no account, no cookies and no analytics. It is free and open source."
+   ],
+   "features": [
+    "Print PDF with the inside margin KDP requires for your page count, embedded fonts and optional bleed.",
+    "Accessible EPUB 3 with a navigable table of contents, the book's language and image descriptions.",
+    "Knuth–Plass line breaking, hyphenation in six languages, drop caps, running heads and chapter openers.",
+    "A chapter editor, drag-to-reorder chapter list, book details form and front cover, all saved in your browser.",
+    "Imports .md, .txt and .docx manuscripts and lists what it left out.",
+    "A free publish checklist and a live paged preview that lists broken links and missing images."
+   ]
+  }
+ ]
+}
