@@ -1,0 +1,10 @@
+{
+  "linkvane-pro": {
+    "version": "1.3.0",
+    "released": "2026-11-11",
+    "notes": {
+      "en": "One-click fixes, redirects from the 404 log, watched pages with alerts and client reports.",
+      "es": "Arreglos con un clic, redirecciones desde el registro de 404, páginas vigiladas con avisos e informes de cliente."
+    }
+  }
+}
