@@ -15,6 +15,7 @@ General rules: the owner's Claude project instructions. This file adds only what
 | Serve | `npm start` (:8080) |
 | Catalog (one page per free product, sitemap, robots; reads each repo's README and manifest) | `node catalog/build.mjs --out /tmp/site [--local <dir with the clones>]` |
 | Inspector CLI (same checks, on a local folder or owner/repo; exit 1 on fail) | `node plugin-inspector/cli.js <folder\|owner/repo> [--json] [--offline]` |
+| Health badges (one shields.io JSON per directory plugin; ~1 min for 10,000; daily deploy runs it) | `node plugin-inspector/badges.js --out <dir> [--limit n]` |
 
 ## Rules
 - Public repo: never add a `Claude-Session:` trailer or any claude.ai link to commits, PR titles or PR bodies. This rule beats the default attribution guidance.
@@ -26,6 +27,9 @@ General rules: the owner's Claude project instructions. This file adds only what
 - `/catalog/` is generated, never committed: `catalog/products.json` lists the products, `catalog/build.mjs` writes pages, `sitemap.xml` and `robots.txt` into `_site` on every deploy and daily (`schedule` in `pages.yml`), so a release shows up within a day. A new product is one line in `products.json`; `optional: true` skips it until it exists (the three pending WordPress plugins).
 - Video: `catalog/video/<slug>.mp4` (real Obsidian captures, committed) wins; else a README GIF becomes MP4; else the README's first image. Pro and prices never appear there.
 - The build validates every page (title, description, one h1, OG, alt, JSON-LD, canonical in the sitemap) and exits 1 on a problem.
+
+- Alternative pages: `catalog/alternatives.json` lists `{slug, ours, rival}`; `catalog/alternatives.mjs` renders `/catalog/alternatives/<slug>/` and `/catalog/es/alternativas/<slug>/` from the Obsidian directory files only (numbers and dates are never typed by hand; `test/alternatives.test.js` fails on any number outside the facts). Neutral tone; if the rival's author asks, remove their entry. Spanish pages translate the frame only, product text stays English (`lang="en"`).
+- Every product page also has `/catalog/es/<slug>/` and a "From the same author" block (`SAME_AUTHOR` in `catalog/build.mjs`).
 
 ## Traps
 - Never add a folder named after an app repo: the project site at that path wins.

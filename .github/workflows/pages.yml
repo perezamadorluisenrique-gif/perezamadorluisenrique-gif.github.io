@@ -31,6 +31,8 @@ jobs:
         run: |
           command -v ffmpeg >/dev/null || sudo apt-get install -y ffmpeg
           node catalog/build.mjs --out "$RUNNER_TEMP/site"
+      - name: Badge generator smoke test (25 plugins)
+        run: node plugin-inspector/badges.js --out "$RUNNER_TEMP/badge" --limit 25
 
   # Pages may serve main or gh-pages; publishing the same files to gh-pages keeps
   # either source correct (same pattern as the app repos).
@@ -55,6 +57,10 @@ jobs:
         run: |
           command -v ffmpeg >/dev/null || sudo apt-get install -y ffmpeg
           node catalog/build.mjs --out _site
+      # One shields.io endpoint JSON per plugin in the Obsidian directory (about a minute for ~10,000).
+      # The site is rebuilt from scratch, so a failure here stops the deploy and yesterday's site stays up.
+      - name: Build the Plugin Inspector badges
+        run: node plugin-inspector/badges.js --out _site/plugin-inspector/badge --budget-min 8
       - name: Publish to gh-pages
         working-directory: _site
         run: |
@@ -85,6 +91,9 @@ jobs:
             if curl -fsS "$base/" | grep -q "Hidden Problems Lab" \
               && curl -fsS "$base/plugin-inspector/" | grep -q "Obsidian Plugin Inspector" \
               && curl -fsS "$base/plugin-inspector/inspect.js" | grep -q "checkManifest" \
+              && curl -fsS "$base/plugin-inspector/badge/section-numbering.json" | grep -q "Plugin Inspector" \
+              && curl -fsS "$base/plugin-inspector/badge/" | grep -q "Add the Plugin Inspector badge" \
+              && curl -fsS "$base/catalog/alternatives/" | grep -q "alternatives" \
               && curl -fsS "$base/catalog/" | grep -q "Free tools by Hidden Problems Lab" \
               && curl -fsS "$base/catalog/section-numbering/" | grep -q "Section Numbering" \
               && curl -fsS "$base/sitemap.xml" | grep -q "/catalog/section-numbering/" \

@@ -30,5 +30,11 @@ code{background:var(--card);border:1px solid var(--line);border-radius:4px;paddi
 .card img,.card .ph{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;border-radius:8px;background:var(--line)}
 .card .t{font-weight:600;color:var(--link)}.card .d{font-size:.92rem;color:var(--muted)}
 [hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tablewrap{overflow-x:auto}.compare{border-collapse:collapse;width:100%;font-size:.92rem}
+.compare th,.compare td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.compare thead th{background:var(--card)}.compare tbody th{font-weight:600;background:var(--card);width:24%}.compare td{width:38%;overflow-wrap:break-word}.compare th{overflow-wrap:break-word}
+section.same-author{border-top:1px solid var(--line);padding-top:16px}
+ol li{margin-bottom:6px}
 footer{max-width:960px;margin:0 auto;padding:16px;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem}
 @media (max-width:520px){h1{font-size:1.6rem}.facts{grid-template-columns:1fr}.facts dd{margin-bottom:6px}}

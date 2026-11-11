@@ -1,0 +1,9 @@
+{
+ "note": "Each page compares one of our plugins with a popular plugin that does the same job. Every number and date on the page comes from the Obsidian directory files at build time; nothing here is typed by hand.",
+ "pages": [
+  { "slug": "text-format", "ours": "text-format", "rival": "obsidian-text-format" },
+  { "slug": "smart-typography", "ours": "typography-as-you-type", "rival": "obsidian-smart-typography" },
+  { "slug": "number-headings", "ours": "section-numbering", "rival": "number-headings-obsidian" },
+  { "slug": "excel-to-markdown-table", "ours": "spreadsheet-to-table", "rival": "obsidian-excel-to-markdown-table" }
+ ]
+}

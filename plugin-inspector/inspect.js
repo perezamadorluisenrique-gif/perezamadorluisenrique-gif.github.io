@@ -190,6 +190,21 @@
     return '[![Obsidian downloads](' + src + ')](https://obsidian.md/plugins?id=' + encodeURIComponent(id) + ')';
   }
 
+  // "Plugin Inspector: healthy" badge for a README: shields.io reads our daily JSON for the id,
+  // and the badge links to that plugin's page in the Inspector.
+  var SITE = 'https://perezamadorluisenrique-gif.github.io';
+  function healthBadgeUrl(id) {
+    return SITE + '/plugin-inspector/badge/' + encodeURIComponent(id) + '.json';
+  }
+  function healthBadgeMarkdown(id) {
+    return '[![Plugin Inspector](https://img.shields.io/endpoint?url=' + encodeURIComponent(healthBadgeUrl(id)) + ')](' +
+      SITE + '/plugin-inspector/?q=' + encodeURIComponent(id) + ')';
+  }
+  function healthBadgeHtml(id) {
+    return '<a href="' + SITE + '/plugin-inspector/?q=' + encodeURIComponent(id) + '"><img alt="Plugin Inspector" src="https://img.shields.io/endpoint?url=' +
+      encodeURIComponent(healthBadgeUrl(id)) + '"></a>';
+  }
+
   function formatNumber(n) {
     return Number(n || 0).toLocaleString('en-US');
   }
@@ -209,6 +224,6 @@
     DIRECTORY: DIRECTORY, RAW: RAW,
     parseQuery: parseQuery, versionsOf: versionsOf, compareVersions: compareVersions, ranks: ranks,
     tokens: tokens, similar: similar, search: search, checkManifest: checkManifest, checkRepo: checkRepo,
-    summary: summary, badgeMarkdown: badgeMarkdown, formatNumber: formatNumber, ago: ago,
+    summary: summary, badgeMarkdown: badgeMarkdown, healthBadgeUrl: healthBadgeUrl, healthBadgeMarkdown: healthBadgeMarkdown, healthBadgeHtml: healthBadgeHtml, formatNumber: formatNumber, ago: ago,
   };
 });

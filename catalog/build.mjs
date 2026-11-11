@@ -11,9 +11,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { T, tr } from './i18n.mjs';
+import { pluginFacts, renderAlternative, renderAlternativesIndex } from './alternatives.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SITE = 'https://perezamadorluisenrique-gif.github.io';
+export const SITE = 'https://perezamadorluisenrique-gif.github.io';
 
 // ---------- small text helpers ----------
 export const esc = (s) =>
@@ -71,7 +73,7 @@ export function parseReadme(md) {
 	let list = null;
 	const flush = () => {
 		if (para.length && !seenH2) {
-			const t = para.join(' ').trim();
+			const t = para.join(' ').replace(/\[([^\]]+)\]\[[^\]]*\]/g, '$1').trim();
 			if (t && !PAID.test(t) && intro.length < 3 && !/^(\*\*)?interface languages/i.test(t)) intro.push(t);
 		}
 		para = [];
@@ -121,7 +123,7 @@ export function parseReadme(md) {
 			continue;
 		}
 		flushList();
-		if (/^\s*(<|\[!\[|!\[|\|)/.test(line) || /^\s*>/.test(line)) continue;
+		if (/^\s*(<|\[!\[|!\[|\|)/.test(line) || /^\s*>/.test(line) || /^\s*\[[^\]]+\]:\s+\S+/.test(line)) continue;
 		para.push(line.trim());
 	}
 	flush();
@@ -250,6 +252,7 @@ export function prepareMedia(slug, file, ext, outDir, curatedMp4, ffmpeg) {
 
 // ---------- loading products ----------
 const OBSIDIAN_DIRECTORY = 'https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugins.json';
+const OBSIDIAN_STATS = 'https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json';
 
 export async function loadProduct(p, src, ctx) {
 	const owner = src.owner;
@@ -345,16 +348,23 @@ export async function loadProduct(p, src, ctx) {
 const FAVICON =
 	"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23fbbf24' stroke-width='3'/%3E%3Cpath d='M22 22 L27 27' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E";
 
-function head({ title, description, canonical, image, jsonld }) {
+// alts: [{ lang, url }] other-language versions of the page, used for hreflang and the language link.
+export function head({ title, description, canonical, image, jsonld, lang = 'en', alts = [] }) {
+	const t = T[lang];
+	const hreflang = alts.length
+		? [{ lang, url: canonical }, ...alts].map((a) => `<link rel="alternate" hreflang="${a.lang}" href="${a.url}">`).join('\n') +
+			`\n<link rel="alternate" hreflang="x-default" href="${[{ lang, url: canonical }, ...alts].find((a) => a.lang === 'en').url}">\n`
+		: '';
+	const other = alts[0] ? `<a href="${alts[0].url.replace(SITE, '')}" hreflang="${alts[0].lang}" lang="${alts[0].lang}">${esc(T[alts[0].lang].otherLang)}</a>` : '';
 	return `<!doctype html>
-<html lang="en">
+<html lang="${t.htmlLang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#1f2937">
+${hreflang}<meta name="theme-color" content="#1f2937">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hidden Problems Lab">
 <meta property="og:title" content="${esc(title)}">
@@ -367,22 +377,62 @@ function head({ title, description, canonical, image, jsonld }) {
 <script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Hidden Problems Lab</a><nav aria-label="Main"><a href="/catalog/">Catalog</a><a href="/plugin-inspector/">Plugin Inspector</a></nav></header>
+<header class="top"><a class="brand" href="/">Hidden Problems Lab</a><nav aria-label="${t.main}"><a href="${lang === 'es' ? '/catalog/es/' : '/catalog/'}">${t.catalog}</a><a href="/plugin-inspector/">${t.inspector}</a>${other}</nav></header>
 <main>
 `;
 }
 
-const foot = `</main>
-<footer><p>Everything in this catalog is free and open source. Pages are generated from each product's own README and manifest, so they match the latest release.</p><p><a href="/catalog/">All products</a> · <a href="/">Hidden Problems Lab</a></p></footer>
+export const footFor = (lang = 'en') => {
+	const t = T[lang];
+	const home = lang === 'es' ? '/catalog/es/' : '/catalog/';
+	return `</main>
+<footer><p>${t.footer}</p><p><a href="${home}">${t.allProducts}</a> · <a href="/">${t.lab}</a></p></footer>
 </body>
 </html>
 `;
+};
+const foot = footFor('en');
 
-export function renderPage(prod, ctx, related) {
-	const url = `${SITE}/catalog/${prod.slug}/`;
-	const noun = { obsidian: 'Obsidian plugin', wordpress: 'WordPress plugin', cli: 'command-line tool', web: 'web app' }[prod.kind];
-	const title = `${prod.name}: free ${noun}`;
+// The six products worth a click from any page: the big ones and the three web apps.
+export const SAME_AUTHOR = [
+	{ slug: 'book-studio-web', href: '/catalog/book-studio-web/' },
+	{ slug: 'update-radar', href: '/catalog/update-radar/' },
+	{ slug: 'claimable', href: '/catalog/claimable/' },
+	{ slug: 'cert-radar', href: '/cert-radar/', name: '47-Day Cert Radar', text: 'See every public TLS certificate for a domain and when each one breaks under the shorter lifetimes coming from 2026.' },
+	{ slug: 'same-pill-new-look', href: '/same-pill-new-look/', name: 'Same Pill, New Look', text: 'Warns you when a refill comes from a different generic maker and will look different.' },
+	{ slug: 'recall-radar', href: '/recall-radar/', name: 'RecallRadar', text: 'Checks products, food and cars you own against U.S. recalls.' },
+];
+
+export function renderSameAuthor(prods, selfSlug, lang = 'en') {
+	const t = T[lang];
+	const items = SAME_AUTHOR.filter((a) => a.slug !== selfSlug)
+		.map((a) => {
+			const p = prods.find((x) => x.slug === a.slug);
+			const name = a.name || (p && p.name);
+			const text = a.text || (p && short(p.tagline || p.intro[0] || ''));
+			if (!name) return '';
+			const href = lang === 'es' && a.href.startsWith('/catalog/') ? a.href.replace('/catalog/', '/catalog/es/') : a.href;
+			return `<li><a href="${href}">${esc(name)}</a>: <span lang="en">${esc(text)}</span></li>`;
+		})
+		.filter(Boolean);
+	if (!items.length) return '';
+	return `<section class="same-author"><h2>${t.sameAuthor}</h2>\n<p>${t.sameAuthorLead}</p>\n<ul class="related">${items.join('')}</ul></section>\n`;
+}
+
+// opts: { lang, prods (all loaded products, for the same-author block), alt: { name, url } | null }
+export function renderPage(prod, ctx, related, opts = {}) {
+	const lang = opts.lang || 'en';
+	const t = T[lang];
+	const base = lang === 'es' ? `${SITE}/catalog/es/` : `${SITE}/catalog/`;
+	const url = `${base}${prod.slug}/`;
+	const enUrl = `${SITE}/catalog/${prod.slug}/`;
+	const esUrl = `${SITE}/catalog/es/${prod.slug}/`;
+	const noun = t.nouns[prod.kind];
+	let title = t.titleOf(prod.name, noun);
+	if (esc(title).length > 70) title = clip(esc(prod.name).length > 60 ? prod.name : `${prod.name}: ${lang === 'es' ? 'gratis' : 'free'}`, 66);
 	const description = clip(prod.tagline || prod.intro[0] || prod.name, 158);
+	const mediaBase = `/catalog/${prod.slug}/`;
+	const mp = (f) => (lang === 'es' && f ? mediaBase + f : f);
 	const image = prod.media && prod.media.og ? `${SITE}/catalog/${prod.slug}/${prod.media.og}` : `${SITE}/catalog/og-default.png`;
 	const jsonld = {
 		'@context': 'https://schema.org',
@@ -393,6 +443,7 @@ export function renderPage(prod, ctx, related) {
 		operatingSystem: prod.kind === 'obsidian' ? 'Windows, macOS, Linux, iOS, Android (Obsidian)' : prod.kind === 'wordpress' ? 'WordPress' : 'Any',
 		url,
 		image,
+		inLanguage: lang,
 		offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 		license: prod.license === 'MIT' ? 'https://opensource.org/licenses/MIT' : 'https://www.gnu.org/licenses/gpl-2.0.html',
 		author: { '@type': 'Organization', name: 'Hidden Problems Lab', url: SITE + '/' },
@@ -403,69 +454,80 @@ export function renderPage(prod, ctx, related) {
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: [
-			{ '@type': 'ListItem', position: 1, name: 'Catalog', item: `${SITE}/catalog/` },
+			{ '@type': 'ListItem', position: 1, name: t.catalog, item: base },
 			{ '@type': 'ListItem', position: 2, name: prod.name, item: url },
 		],
 	};
-	let h = head({ title, description, canonical: url, image, jsonld: [jsonld, crumbs] });
-	h += `<nav class="crumbs" aria-label="Breadcrumb"><a href="/catalog/">Catalog</a> <span aria-hidden="true">/</span> <span>${esc(prod.category)}</span></nav>
-<p class="eyebrow">Free ${noun}</p>
+	const alts = [{ lang: lang === 'es' ? 'en' : 'es', url: lang === 'es' ? enUrl : esUrl }];
+	let h = head({ title, description, canonical: url, image, jsonld: [jsonld, crumbs], lang, alts });
+	const en = (s) => (lang === 'es' ? `<span lang="en">${s}</span>` : s);
+	h += `<nav class="crumbs" aria-label="${t.breadcrumb}"><a href="${base}">${t.catalog}</a> <span aria-hidden="true">/</span> <span>${esc(t.categories[prod.category] || prod.category)}</span></nav>
+<p class="eyebrow">${t.freeNoun(noun)}</p>
 <h1>${esc(prod.name)}</h1>
-<p class="lead">${esc(prod.tagline || prod.intro[0] || '')}</p>
+<p class="lead">${en(esc(prod.tagline || prod.intro[0] || ''))}</p>
 <p class="actions">`;
-	if (prod.install) h += `<a class="btn" href="${esc(prod.install.url)}" rel="noopener">${esc(prod.install.label)}</a>`;
-	for (const l of prod.links.slice(0, 3)) h += ` <a class="btn alt" href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`;
+	if (prod.install) h += `<a class="btn" href="${esc(prod.install.url)}" rel="noopener">${esc(tr(lang, 'labels', prod.install.label))}</a>`;
+	for (const l of prod.links.slice(0, 3)) h += ` <a class="btn alt" href="${esc(l.url)}" rel="noopener">${esc(tr(lang, 'labels', l.label))}</a>`;
 	h += `</p>\n`;
 	if (prod.media) {
 		const alt = esc(prod.mediaAlt || `${prod.name} in use`);
 		if (prod.media.video)
-			h += `<figure class="media"><video autoplay loop muted playsinline controls preload="metadata"${prod.media.thumb ? ` poster="${prod.media.thumb}"` : ''} aria-label="${alt}"><source src="${prod.media.video}" type="video/mp4"><img src="${prod.media.image}" alt="${alt}"></video><figcaption>${alt}</figcaption></figure>\n`;
-		else if (prod.media.image) h += `<figure class="media"><img src="${prod.media.image}" alt="${alt}" loading="lazy"><figcaption>${alt}</figcaption></figure>\n`;
+			h += `<figure class="media"><video autoplay loop muted playsinline controls preload="metadata"${prod.media.thumb ? ` poster="${mp(prod.media.thumb)}"` : ''} aria-label="${alt}"><source src="${mp(prod.media.video)}" type="video/mp4"><img src="${mp(prod.media.image)}" alt="${alt}"></video><figcaption>${alt}</figcaption></figure>\n`;
+		else if (prod.media.image) h += `<figure class="media"><img src="${mp(prod.media.image)}" alt="${alt}" loading="lazy"><figcaption>${alt}</figcaption></figure>\n`;
 	}
-	h += `<section><h2>What it does</h2>\n`;
-	for (const t of prod.intro) h += `<p>${inline(t)}</p>\n`;
+	h += `<section><h2>${t.what}</h2>\n`;
+	if (lang === 'es') h += `<p class="note">${t.textLang}</p>\n`;
+	for (const x of prod.intro) h += `<p${lang === 'es' ? ' lang="en"' : ''}>${inline(x)}</p>\n`;
 	h += `</section>\n`;
-	if (prod.features.length) h += `<section><h2>Highlights</h2>\n<ul>${prod.features.map((f) => `<li>${inline(f)}</li>`).join('')}</ul></section>\n`;
-	h += `<section><h2>Details</h2>\n<dl class="facts">${prod.facts.filter((f) => f[1]).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>\n`;
-	if (prod.kind === 'obsidian' && !prod.listed) h += `<p class="note">Not in the Obsidian directory yet: download <code>main.js</code>, <code>manifest.json</code> and <code>styles.css</code> from the latest release into <code>.obsidian/plugins/${esc(prod.id)}/</code> in your vault.</p>\n`;
+	if (prod.features.length) h += `<section><h2>${t.highlights}</h2>\n<ul${lang === 'es' ? ' lang="en"' : ''}>${prod.features.map((f) => `<li>${inline(f)}</li>`).join('')}</ul></section>\n`;
+	h += `<section><h2>${t.details}</h2>\n<dl class="facts">${prod.facts.filter((f) => f[1]).map(([k, v]) => `<dt>${esc(tr(lang, 'facts', k))}</dt><dd>${esc(tr(lang, 'labels', v))}</dd>`).join('')}</dl>\n`;
+	if (prod.kind === 'obsidian' && !prod.listed) h += `<p class="note">${t.notListed(esc(prod.id))}</p>\n`;
 	h += `</section>\n`;
-	if (related.length)
-		h += `<section><h2>More free tools</h2>\n<ul class="related">${related.map((r) => `<li><a href="/catalog/${r.slug}/">${esc(r.name)}</a>: ${esc(short(r.tagline || r.intro[0] || ''))}</li>`).join('')}</ul></section>\n`;
-	return h + foot;
+	if (opts.alt) h += `<section><h2>${t.cameFrom(esc(opts.alt.name))}</h2>\n<p><a href="${opts.alt.url}">${t.cameFromLink}</a>.</p></section>\n`;
+	if (related.length) {
+		const rel = (r) => (lang === 'es' ? `/catalog/es/${r.slug}/` : `/catalog/${r.slug}/`);
+		h += `<section><h2>${t.moreFree}</h2>\n<ul class="related">${related.map((r) => `<li><a href="${rel(r)}">${esc(r.name)}</a>: ${en(esc(short(r.tagline || r.intro[0] || '')))}</li>`).join('')}</ul></section>\n`;
+	}
+	if (opts.prods) h += renderSameAuthor(opts.prods, prod.slug, lang);
+	return h + footFor(lang);
 }
 
-export function renderIndex(prods) {
-	const url = `${SITE}/catalog/`;
-	const title = 'Free Obsidian and WordPress plugins and tools';
-	const description = `${prods.length} free, open source tools by Hidden Problems Lab: Obsidian plugins, WordPress plugins, a GitHub issue checker and a book-making web app. Each page has a demo and install links.`;
+export function renderIndex(prods, lang = 'en') {
+	const t = T[lang];
+	const base = lang === 'es' ? `${SITE}/catalog/es/` : `${SITE}/catalog/`;
+	const url = base;
+	const title = t.indexTitle;
+	const description = t.indexDesc(prods.length);
 	const jsonld = {
 		'@context': 'https://schema.org',
 		'@type': 'CollectionPage',
 		name: title,
 		description,
 		url,
+		inLanguage: lang,
 		mainEntity: {
 			'@type': 'ItemList',
-			itemListElement: prods.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/catalog/${p.slug}/`, name: p.name })),
+			itemListElement: prods.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${base}${p.slug}/`, name: p.name })),
 		},
 	};
-	let h = head({ title, description, canonical: url, image: `${SITE}/catalog/og-default.png`, jsonld });
-	h += `<h1>Free tools by Hidden Problems Lab</h1>
-<p class="lead">${prods.length} free and open source tools. No accounts, no tracking, and each one does one job well.</p>
-<p><label class="filter">Filter <input id="q" type="search" placeholder="Type a name or a word" autocomplete="off"></label></p>
+	const alts = [{ lang: lang === 'es' ? 'en' : 'es', url: lang === 'es' ? `${SITE}/catalog/` : `${SITE}/catalog/es/` }];
+	let h = head({ title, description, canonical: url, image: `${SITE}/catalog/og-default.png`, jsonld, lang, alts });
+	h += `<h1>${t.indexH1}</h1>
+<p class="lead">${t.indexLead(prods.length)}</p>
+<p><label class="filter">${t.filter} <input id="q" type="search" placeholder="${t.filterPh}" autocomplete="off"></label></p>
 `;
 	for (const cat of ['Obsidian plugins', 'WordPress plugins', 'Developer tools', 'Web apps']) {
 		const list = prods.filter((p) => p.category === cat);
 		if (!list.length) continue;
-		h += `<section class="group"><h2>${cat} <span class="count">${list.length}</span></h2>\n<ul class="cards">\n`;
+		h += `<section class="group"><h2>${t.categories[cat]} <span class="count">${list.length}</span></h2>\n<ul class="cards">\n`;
 		for (const p of list) {
 			const thumb = p.media && p.media.thumb ? `<img src="/catalog/${p.slug}/${p.media.thumb}" alt="" width="240" height="150" loading="lazy">` : '<div class="ph" aria-hidden="true"></div>';
-			h += `<li data-t="${esc((p.name + ' ' + (p.tagline || '')).toLowerCase())}"><a class="card" href="/catalog/${p.slug}/">${thumb}<span class="t">${esc(p.name)}</span><span class="d">${esc(clip(p.tagline || p.intro[0] || '', 120))}</span></a></li>\n`;
+			h += `<li data-t="${esc((p.name + ' ' + (p.tagline || '')).toLowerCase())}"><a class="card" href="${base.replace(SITE, '')}${p.slug}/">${thumb}<span class="t">${esc(p.name)}</span><span class="d"${lang === 'es' ? ' lang="en"' : ''}>${esc(clip(p.tagline || p.intro[0] || '', 120))}</span></a></li>\n`;
 		}
 		h += `</ul></section>\n`;
 	}
 	h += `<script src="/catalog/catalog.js" defer></script>\n`;
-	return h + foot;
+	return h + footFor(lang);
 }
 
 export function renderSitemap(urls, date) {
@@ -517,13 +579,17 @@ export function validate(out) {
 }
 
 // ---------- main ----------
-export async function build({ out, local, products, directory, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
+export async function build({ out, local, products, directory, dirList, stats, alternatives, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
 	const conf = JSON.parse(fs.readFileSync(path.join(HERE, 'products.json'), 'utf8'));
 	const src = makeSource({ local, owner: conf.owner });
 	const warns = [];
 	const ctx = { warn: (m) => (warns.push(m), log(`warn: ${m}`)), directory: new Set() };
 	try {
-		ctx.directory = directory || new Set((await src.json(OBSIDIAN_DIRECTORY)).map((p) => p.id));
+		if (directory) ctx.directory = directory;
+		else {
+			dirList = dirList || (await src.json(OBSIDIAN_DIRECTORY));
+			ctx.directory = new Set(dirList.map((p) => p.id));
+		}
 	} catch (e) {
 		ctx.warn(`Obsidian directory unavailable (${e.message}); every plugin links to its release`);
 	}
@@ -553,19 +619,68 @@ export async function build({ out, local, products, directory, log = console.log
 		prod.media = prod.mediaFile || fs.existsSync(cur) ? prepareMedia(prod.slug, prod.mediaFile, prod.ext, dir, fs.existsSync(cur) ? cur : null, ffmpeg) : null;
 		delete prod.mediaFile;
 	}
+	// "Alternative to" pages. They need the directory files; if those are unreachable the pages are skipped, never half-written.
+	const altConf = alternatives === undefined ? JSON.parse(fs.readFileSync(path.join(HERE, 'alternatives.json'), 'utf8')).pages : alternatives;
+	const altItems = [];
+	if (altConf.length) {
+		try {
+			dirList = dirList || (await src.json(OBSIDIAN_DIRECTORY));
+			stats = stats || (await src.json(OBSIDIAN_STATS));
+			for (const page of altConf) {
+				const product = loaded.find((x) => x.slug === page.ours);
+				const find = (id) => dirList.find((x) => x.id === id);
+				const rival = pluginFacts(find(page.rival), stats[page.rival]);
+				const oursId = product && product.id;
+				const ours = oursId ? pluginFacts(find(oursId) || { id: oursId, name: product.name, author: 'Siulved54', description: product.tagline }, stats[oursId]) : null;
+				if (!product || !rival || !ours) {
+					ctx.warn(`alternatives/${page.slug}: missing data, page skipped`);
+					continue;
+				}
+				ours.version = product.version || ours.version;
+				altItems.push({ page, facts: { rival, ours, product } });
+			}
+		} catch (e) {
+			ctx.warn(`alternatives skipped: ${e.message}`);
+		}
+	}
+	const altFor = new Map(altItems.map((i) => [i.page.ours, i]));
 	loaded.forEach((prod, i) => {
 		const peers = loaded.filter((x) => x.category === prod.category && x !== prod);
 		const k = peers.indexOf(loaded[(i + 1) % loaded.length]);
 		const start = Math.max(0, k);
 		const related = peers.length ? Array.from({ length: Math.min(4, peers.length) }, (_, j) => peers[(start + j) % peers.length]) : [];
-		fs.writeFileSync(path.join(root, prod.slug, 'index.html'), renderPage(prod, ctx, related));
+		const a = altFor.get(prod.slug);
+		for (const lang of ['en', 'es']) {
+			const seg = lang === 'es' ? 'es/alternativas' : 'alternatives';
+			const alt = a ? { name: a.facts.rival.name, url: `/catalog/${seg}/${a.page.slug}/` } : null;
+			const dest = lang === 'es' ? path.join(root, 'es', prod.slug) : path.join(root, prod.slug);
+			fs.mkdirSync(dest, { recursive: true });
+			fs.writeFileSync(path.join(dest, 'index.html'), renderPage(prod, ctx, related, { lang, prods: loaded, alt }));
+		}
 	});
+	fs.mkdirSync(path.join(root, 'es'), { recursive: true });
 	fs.writeFileSync(path.join(root, 'index.html'), renderIndex(loaded));
-	const urls = [`${SITE}/`, `${SITE}/catalog/`, ...loaded.map((p) => `${SITE}/catalog/${p.slug}/`), `${SITE}/plugin-inspector/`];
+	fs.writeFileSync(path.join(root, 'es', 'index.html'), renderIndex(loaded, 'es'));
+	const altUrls = [];
+	if (altItems.length) {
+		for (const lang of ['en', 'es']) {
+			const seg = lang === 'es' ? path.join('es', 'alternativas') : 'alternatives';
+			const urlSeg = lang === 'es' ? 'es/alternativas' : 'alternatives';
+			fs.mkdirSync(path.join(root, seg), { recursive: true });
+			fs.writeFileSync(path.join(root, seg, 'index.html'), renderAlternativesIndex(altItems, lang));
+			altUrls.push(`${SITE}/catalog/${urlSeg}/`);
+			for (const it of altItems) {
+				fs.mkdirSync(path.join(root, seg, it.page.slug), { recursive: true });
+				fs.writeFileSync(path.join(root, seg, it.page.slug, 'index.html'), renderAlternative(it.page, it.facts, lang, date));
+				altUrls.push(`${SITE}/catalog/${urlSeg}/${it.page.slug}/`);
+			}
+		}
+	}
+	const urls = [`${SITE}/`, `${SITE}/catalog/`, `${SITE}/catalog/es/`, ...loaded.flatMap((p) => [`${SITE}/catalog/${p.slug}/`, `${SITE}/catalog/es/${p.slug}/`]), ...altUrls, `${SITE}/plugin-inspector/`, `${SITE}/plugin-inspector/badge/`];
 	fs.writeFileSync(path.join(out, 'sitemap.xml'), renderSitemap(urls, date));
 	fs.writeFileSync(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 	log(`catalog: ${loaded.length} products, ${loaded.filter((p) => p.media && p.media.video).length} with video`);
-	return { products: loaded, warns };
+	return { products: loaded, warns, alternatives: altItems, alternativesWanted: altConf.length };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -576,8 +691,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const out = path.resolve(arg('--out') || '_site');
 	const local = arg('--local') ? path.resolve(arg('--local')) : null;
 	fs.mkdirSync(out, { recursive: true });
-	const { warns } = await build({ out, local });
+	const { alternatives, alternativesWanted } = await build({ out, local });
 	const v = validate(out);
+	if (alternatives.length < alternativesWanted) {
+		console.log(`  alternatives: ${alternatives.length} of ${alternativesWanted} pages built; not publishing a site that drops the others`);
+		v.errors.push('alternatives incomplete');
+	}
 	console.log(`validate: ${v.pages} pages, ${v.errors.length} problems`);
 	for (const e of v.errors) console.log('  ' + e);
 	process.exit(v.errors.length ? 1 : 0);

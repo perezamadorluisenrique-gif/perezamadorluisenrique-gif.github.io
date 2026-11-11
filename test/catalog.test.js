@@ -59,7 +59,7 @@ test('a full offline build writes valid pages, sitemap and robots', async () => 
   fs.writeFileSync(path.join(local, 'demo', 'docs', 'shot.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>');
   const out = path.join(tmp, 'out');
   const { products } = await build({
-    out, local, directory: new Set(['demo']), log: () => {}, ffmpeg: false, date: '2026-01-01',
+    out, local, directory: new Set(['demo']), log: () => {}, ffmpeg: false, date: '2026-01-01', alternatives: [],
     products: [{ slug: 'demo', kind: 'obsidian', repo: 'demo', name: 'Demo' }],
   });
   assert.strictEqual(products.length, 1);
@@ -70,13 +70,13 @@ test('a full offline build writes valid pages, sitemap and robots', async () => 
   assert.match(fs.readFileSync(path.join(out, 'robots.txt'), 'utf8'), /Sitemap: https:\/\/perezamadorluisenrique-gif\.github\.io\/sitemap\.xml/);
   const v = validate(out);
   assert.deepStrictEqual(v.errors, []);
-  assert.strictEqual(v.pages, 2);
+  assert.strictEqual(v.pages, 4);
 });
 
 test('an unpublished optional product is skipped, a missing required one fails the build', async () => {
   const { build } = await load();
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'catalog-'));
-  const opts = { out: path.join(tmp, 'o'), local: tmp, directory: new Set(), log: () => {}, ffmpeg: false };
+  const opts = { out: path.join(tmp, 'o'), local: tmp, directory: new Set(), log: () => {}, ffmpeg: false, alternatives: [] };
   const r = await build({ ...opts, products: [{ slug: 'x', kind: 'obsidian', repo: 'nope', name: 'X', optional: true }] });
   assert.strictEqual(r.products.length, 0);
   await assert.rejects(build({ ...opts, products: [{ slug: 'x', kind: 'obsidian', repo: 'nope', name: 'X' }] }));
@@ -87,4 +87,52 @@ test('products.json has unique slugs and no paid products', () => {
   const slugs = conf.products.map((p) => p.slug);
   assert.strictEqual(new Set(slugs).size, slugs.length);
   for (const s of slugs) assert.doesNotMatch(s, /pro$|vault$/);
+});
+
+test('every product page, in both languages, has a "From the same author" block that skips itself', async () => {
+  const { renderSameAuthor, SAME_AUTHOR } = await load();
+  const prods = [
+    { slug: 'book-studio-web', name: 'Book Studio for the web', tagline: 'Makes books.', intro: [] },
+    { slug: 'update-radar', name: 'Update Radar', tagline: 'Checks updates.', intro: [] },
+    { slug: 'claimable', name: 'claimable', tagline: 'Checks issues.', intro: [] },
+  ];
+  const en = renderSameAuthor(prods, 'update-radar', 'en');
+  assert.match(en, /From the same author/);
+  assert.match(en, /href="\/catalog\/book-studio-web\/"/);
+  assert.doesNotMatch(en, /href="\/catalog\/update-radar\/"/);
+  assert.match(en, /href="\/cert-radar\/"/);
+  const es = renderSameAuthor(prods, 'claimable', 'es');
+  assert.match(es, /Del mismo autor/);
+  assert.match(es, /href="\/catalog\/es\/update-radar\/"/);
+  assert.match(es, /<span lang="en">/);
+  assert.strictEqual(SAME_AUTHOR.length, 6);
+});
+
+test('the Inspector page links the same-author products and every link points at a real catalog product', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'plugin-inspector', 'index.html'), 'utf8');
+  assert.match(html, /From the same author/);
+  const conf = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'catalog', 'products.json'), 'utf8'));
+  for (const slug of ['book-studio-web', 'update-radar', 'claimable']) {
+    assert.ok(conf.products.some((p) => p.slug === slug), slug);
+    assert.ok(html.includes(`href="/catalog/${slug}/"`), slug);
+  }
+  for (const app of ['cert-radar', 'same-pill-new-look', 'recall-radar']) assert.ok(html.includes(`href="/${app}/"`), app);
+});
+
+test('Spanish product pages declare their language, point at the English page and keep media links absolute', async () => {
+  const { build } = await load();
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'catalog-'));
+  const local = path.join(tmp, 'src');
+  fs.mkdirSync(path.join(local, 'demo', 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(local, 'demo', 'manifest.json'), JSON.stringify({ id: 'demo', name: 'Demo', version: '1.2.3', minAppVersion: '1.4.0', description: 'Does a demo thing in your vault, with enough words to be a decent description.', author: 'Siulved54', isDesktopOnly: false }));
+  fs.writeFileSync(path.join(local, 'demo', 'README.md'), '# Demo\n\nA short intro paragraph that explains the plugin in plain words.\n\n![Shot](docs/shot.svg)\n');
+  fs.writeFileSync(path.join(local, 'demo', 'docs', 'shot.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>');
+  const out = path.join(tmp, 'out');
+  await build({ out, local, directory: new Set(['demo']), log: () => {}, ffmpeg: false, alternatives: [], products: [{ slug: 'demo', kind: 'obsidian', repo: 'demo', name: 'Demo' }] });
+  const es = fs.readFileSync(path.join(out, 'catalog', 'es', 'demo', 'index.html'), 'utf8');
+  assert.match(es, /<html lang="es">/);
+  assert.match(es, /hreflang="en" href="https:\/\/perezamadorluisenrique-gif\.github\.io\/catalog\/demo\/"/);
+  assert.match(es, /plugin de Obsidian gratis/);
+  assert.match(es, /src="\/catalog\/demo\/media\//);
+  assert.match(es, /Instalar desde el directorio de Obsidian/);
 });
