@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Update Radar Pro: safe plugin updates for Obsidian</title>
-  <meta name="description" content="Update Radar Pro copies each plugin before it updates, restores earlier states and finds the plugin that breaks things. 19 USD one time.">
+  <meta name="description" content="Update Radar Pro copies each plugin before it updates, undoes an update session, backs up your configuration and finds the plugin that breaks things. 19 USD one time.">
   <meta name="theme-color" content="#1f2937">
   <link rel="alternate" hreflang="en" href="/pro/update-radar/">
   <link rel="alternate" hreflang="es" href="/pro/update-radar/es/">
@@ -34,6 +34,11 @@
     <li><strong>Copies before every update</strong>Before Update Radar installs an update, Pro copies the plugin's files into your configuration folder. Restore any copy later; the plugin reloads and Update Radar stops offering the newer version.</li>
     <li><strong>Restore points</strong>The version of every plugin and which are on. Pro makes one before Update all, and Go back to a restore point shows what would change and asks first.</li>
     <li><strong>Find the plugin causing a problem</strong>A guided search that turns plugins off and on in halves and asks whether the problem is still there, until one plugin is left. At the end your plugins are back as they were.</li>
+    <li><strong>Undo the last update session</strong>One click puts back every plugin the last update session changed.</li>
+    <li><strong>Backup of your whole configuration</strong>Themes, snippets, hotkeys, settings, appearance and workspaces in one backup, with partial restore: bring back only the parts you choose.</li>
+    <li><strong>Regression meter</strong>Warns when a new version of a plugin starts clearly slower than the one before.</li>
+    <li><strong>plugins.lock.json</strong>A lock file that records the plugin versions you have, so you can see and keep them.</li>
+    <li><strong>Plugin profiles</strong>Named sets of plugins you can switch between.</li>
     <li><strong>Inspect an update</strong>Compares the new release with the installed one: size, new or gone web hosts, patterns worth a look and changes to the manifest. Hints, not verdicts; nothing is run.</li>
     <li><strong>Summary of release notes</strong>Writes one note with the release notes of up to 20 waiting updates, with links and code escaped for safety.</li>
     <li><strong>Update rules</strong>Per plugin: all updates, minor and major only, major only or pinned, plus a wait of 1 to 30 days.</li>
@@ -49,10 +54,11 @@
   <h2>Price</h2>
   <p><span class="price" data-price="update-radar-pro">19 USD</span>, one-time payment.</p>
   <p>One-time payment. No subscription. Commercial licence: use it for yourself or your team, but do not share or resell the file or the key.</p>
+  <p>Pro is closed-source software under a commercial licence. It is delivered as a zip from the payment service, not through the Obsidian community directory, and sales are not open yet.</p>
   <div class="buy-row"><a class="btn is-disabled" data-buy="update-radar-pro" aria-disabled="true">Coming soon</a></div>
 
   <h2>How to activate</h2>
-  <ol class="steps"><li>Buy with the button on this page. The payment service sends your licence key in the receipt email.</li><li>Open the plugin's settings in Obsidian and paste the key.</li><li>Press Activate.</li></ol>
+  <ol class="steps"><li>Sales are not open yet. When they open, the payment service will send you a zip file and your licence key.</li><li>Install the zip following the INSTALL file inside it, then open the plugin's settings in Obsidian and paste the key.</li><li>Press Activate.</li></ol>
 
   <h2>Network and privacy</h2>
   <ul class="plain"><li>Copies and restore points are plain files in your vault. Nothing is sent anywhere.</li><li>Apart from the licence check, the only download is when you ask to inspect an update: it fetches main.js and manifest.json of that release from github.com.</li><li>The licence check: when you press Activate, the plugin sends the key, once, to the licence endpoint of the payment service. After that it is saved on your device and nothing is checked again.</li><li>No telemetry, no analytics, no accounts, no self-update. This page has no cookies and loads nothing from other sites.</li></ul>
