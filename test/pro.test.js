@@ -14,13 +14,14 @@ const PRODUCTS = {
   'book-studio': 'book-studio-pro',
   'section-numbering': 'section-numbering-pro',
   'update-radar': 'update-radar-pro',
+  linkvane: 'linkvane-pro',
   'kdp-book-vault': 'kdp-book-vault',
   'thesis-vault': 'thesis-report-vault',
 };
 const PACKS = ['kdp-book-vault', 'thesis-vault'];
 const PRICES = {
-  'book-studio-pro': '59 USD', 'section-numbering-pro': '15 USD', 'update-radar-pro': '9 USD',
-  'kdp-book-vault': '12 USD', 'thesis-report-vault': '12 USD',
+  'book-studio-pro': '79 USD', 'section-numbering-pro': '29 USD', 'update-radar-pro': '19 USD',
+  'linkvane-pro': '', 'kdp-book-vault': '19 USD', 'thesis-report-vault': '12 USD',
 };
 
 function htmlFiles(dir) {
@@ -69,6 +70,7 @@ test('product pages carry the sections, the buy hook and the signature', () => {
       assert.ok(h.includes(`data-buy="${id}"`), f + ' has its Buy button');
       assert.ok(h.includes(`data-price="${id}"`), f + ' has its price');
       assert.ok(h.includes(config.products[id].price), f + ' static price matches config.json');
+      assert.ok(config.products[id].price || /Price announced at launch|Precio al abrir las ventas/.test(h), f + ' says when the price comes');
       assert.match(h, /<details>/, f + ' has a FAQ');
       assert.match(h, /Siulved54/);
       assert.match(h, /<img [^>]*onerror=/, f + ' screenshot slot hides itself on error');
@@ -76,7 +78,7 @@ test('product pages carry the sections, the buy hook and the signature', () => {
   }
 });
 
-test('every pro page links in its footer to all five products', () => {
+test('every pro page links in its footer to every product', () => {
   for (const f of htmlFiles(proDir)) {
     const h = fs.readFileSync(f, 'utf8');
     const rel = path.relative(proDir, f);
@@ -117,7 +119,7 @@ test('buyState: empty, bad and good checkout URLs', () => {
 });
 
 test('priceText reads the price and tolerates bad config', () => {
-  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '59 USD');
+  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '79 USD');
   assert.strictEqual(core.priceText(config, 'missing'), '');
   assert.strictEqual(core.priceText(undefined, 'x'), '');
 });
@@ -147,4 +149,28 @@ test('no real-name text, no claude.ai, no analytics or third-party resources in 
 test('pages.yml publishes pro/', () => {
   const y = fs.readFileSync(path.join(root, '.github/workflows/pages.yml'), 'utf8');
   assert.match(y, /^\s*cp -r .*\bpro\b.*_site\/$/m);
+});
+
+test('versions.json: schema 1, valid versions, notes in both languages, Linkvane Pro present', () => {
+  const v = JSON.parse(read('versions.json'));
+  assert.strictEqual(v.schema, 1);
+  assert.match(v.updated, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(v.products['linkvane-pro'], 'linkvane-pro entry');
+  for (const [id, p] of Object.entries(v.products)) {
+    assert.ok(Object.values(PRODUCTS).includes(id), id + ' is a known product');
+    assert.match(p.version, /^\d{1,4}\.\d{1,4}\.\d{1,4}$/, id);
+    assert.match(p.released, /^\d{4}-\d{2}-\d{2}$/, id);
+    assert.ok(p.notes.en && p.notes.es, id + ' notes in en and es');
+    assert.ok(p.notes.en.length <= 300 && p.notes.es.length <= 300, id + ' notes short');
+    assert.deepStrictEqual(Object.keys(p).sort(), ['notes', 'released', 'version'], id);
+  }
+});
+
+test('versions.json and the pages carry no code, no download links and no key material', () => {
+  const v = read('versions.json');
+  assert.ok(!/https?:\/\//.test(v), 'versions.json has no URLs');
+  for (const f of htmlFiles(proDir)) {
+    const h = fs.readFileSync(f, 'utf8');
+    assert.ok(!/\.zip\b|PUBLIC_KEYS|BEGIN (PUBLIC|PRIVATE)/.test(h), path.relative(proDir, f) + ' links a zip or key');
+  }
 });
