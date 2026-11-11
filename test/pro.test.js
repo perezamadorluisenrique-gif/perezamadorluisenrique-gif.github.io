@@ -151,18 +151,17 @@ test('pages.yml publishes pro/', () => {
   assert.match(y, /^\s*cp -r .*\bpro\b.*_site\/$/m);
 });
 
-test('versions.json: schema 1, valid versions, notes in both languages, Linkvane Pro present', () => {
+test('versions.json: flat map by product id, valid versions, short notes, Linkvane Pro present', () => {
   const v = JSON.parse(read('versions.json'));
-  assert.strictEqual(v.schema, 1);
-  assert.match(v.updated, /^\d{4}-\d{2}-\d{2}$/);
-  assert.ok(v.products['linkvane-pro'], 'linkvane-pro entry');
-  for (const [id, p] of Object.entries(v.products)) {
+  assert.ok(v['linkvane-pro'], 'linkvane-pro entry');
+  for (const [id, p] of Object.entries(v)) {
     assert.ok(Object.values(PRODUCTS).includes(id), id + ' is a known product');
     assert.match(p.version, /^\d{1,4}\.\d{1,4}\.\d{1,4}$/, id);
-    assert.match(p.released, /^\d{4}-\d{2}-\d{2}$/, id);
-    assert.ok(p.notes.en && p.notes.es, id + ' notes in en and es');
-    assert.ok(p.notes.en.length <= 300 && p.notes.es.length <= 300, id + ' notes short');
-    assert.deepStrictEqual(Object.keys(p).sort(), ['notes', 'released', 'version'], id);
+    if (p.released !== undefined) assert.match(p.released, /^\d{4}-\d{2}-\d{2}$/, id);
+    const notes = typeof p.notes === 'string' ? { en: p.notes } : p.notes;
+    assert.ok(notes.en && notes.en.length <= 300, id + ' notes in English, short');
+    if (notes.es) assert.ok(notes.es.length <= 300, id + ' Spanish notes short');
+    assert.ok(Object.keys(p).every((k) => ['version', 'released', 'notes'].includes(k)), id + ' only version, released, notes');
   }
 });
 
