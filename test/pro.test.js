@@ -20,7 +20,7 @@ const PRODUCTS = {
 };
 const PACKS = ['kdp-book-vault', 'thesis-vault'];
 const PRICES = {
-  'book-studio-pro': '79 USD', 'section-numbering-pro': '29 USD', 'update-radar-pro': '19 USD',
+  'book-studio-pro': '39 USD', 'section-numbering-pro': '29 USD', 'update-radar-pro': '19 USD',
   'linkvane-pro': '', 'kdp-book-vault': '19 USD', 'thesis-report-vault': '12 USD',
 };
 
@@ -119,7 +119,7 @@ test('buyState: empty, bad and good checkout URLs', () => {
 });
 
 test('priceText reads the price and tolerates bad config', () => {
-  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '79 USD');
+  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '39 USD');
   assert.strictEqual(core.priceText(config, 'missing'), '');
   assert.strictEqual(core.priceText(undefined, 'x'), '');
 });
