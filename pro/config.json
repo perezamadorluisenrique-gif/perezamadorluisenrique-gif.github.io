@@ -1,0 +1,50 @@
+{
+  "provider": "",
+  "providers": {
+    "polar": {
+      "organizationId": ""
+    },
+    "lemonsqueezy": {
+      "storeId": ""
+    },
+    "gumroad": {}
+  },
+  "products": {
+    "book-studio-pro": {
+      "name": "Book Studio Pro",
+      "price": "39 USD",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "section-numbering-pro": {
+      "name": "Section Numbering Pro",
+      "price": "29 USD",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "update-radar-pro": {
+      "name": "Update Radar Pro",
+      "price": "19 USD",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "linkvane-pro": {
+      "name": "Linkvane Pro",
+      "price": "",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "kdp-book-vault": {
+      "name": "KDP Book Vault",
+      "price": "19 USD",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "thesis-report-vault": {
+      "name": "Thesis and Report Vault",
+      "price": "12 USD",
+      "checkoutUrl": "",
+      "productId": ""
+    }
+  }
+}

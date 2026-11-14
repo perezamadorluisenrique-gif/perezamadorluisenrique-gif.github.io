@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add the Plugin Inspector badge</title>
+  <meta name="description" content="Show a Plugin Inspector health badge in your Obsidian plugin's README. Type your plugin id and copy the Markdown or HTML. Free, no sign-up, updated daily.">
+  <link rel="canonical" href="https://perezamadorluisenrique-gif.github.io/plugin-inspector/badge/">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='14' cy='14' r='7' fill='none' stroke='%23a78bfa' stroke-width='3'/%3E%3Cpath d='M19 19 L26 26' stroke='%23a78bfa' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root { --bg: #f7f7f5; --card: #ffffff; --text: #1f2937; --muted: #4b5563; --line: #e5e7eb; --link: #1d4ed8; --accent: #6d28d9; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #111827; --card: #1f2937; --text: #f3f4f6; --muted: #d1d5db; --line: #374151; --link: #93c5fd; --accent: #c4b5fd; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
+    h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 6px; }
+    h2 { font-size: 1.2rem; margin: 28px 0 8px; }
+    .lead, .muted { color: var(--muted); }
+    a { color: var(--link); }
+    label { display: block; font-weight: 600; margin: 18px 0 4px; }
+    input { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); }
+    input:focus-visible, button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    textarea { width: 100%; font: 0.9rem/1.4 ui-monospace, Menlo, Consolas, monospace; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); resize: vertical; }
+    button { font: inherit; padding: 9px 14px; margin-top: 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; min-height: 44px; }
+    button:hover { border-color: var(--accent); }
+    .pill { display: inline-flex; border-radius: 4px; overflow: hidden; font: 600 0.8rem/1 Verdana, sans-serif; color: #fff; }
+    .pill span { padding: 5px 8px; }
+    .pill .l { background: #555; } .pill .r { background: #2e7d32; }
+    .status { min-height: 1.5em; }
+    footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  </style>
+</head>
+<body>
+<main>
+  <p class="muted"><a href="/plugin-inspector/">Plugin Inspector</a></p>
+  <h1>Add the Plugin Inspector badge</h1>
+  <p class="lead">A small badge for your plugin's README that links to its page in the Plugin Inspector.</p>
+  <p><span class="pill" aria-label="Example badge: Plugin Inspector, healthy"><span class="l">Plugin Inspector</span><span class="r">healthy</span></span></p>
+
+  <label for="id">Your plugin id (the <code>id</code> in manifest.json)</label>
+  <input id="id" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="section-numbering" aria-describedby="status">
+  <p class="status muted" id="status" role="status"></p>
+
+  <h2>Markdown (README.md)</h2>
+  <label for="md" class="sr">Markdown snippet</label>
+  <textarea id="md" rows="3" readonly></textarea>
+  <button type="button" id="copy-md">Copy Markdown</button>
+
+  <h2>HTML</h2>
+  <label for="html" class="sr">HTML snippet</label>
+  <textarea id="html" rows="3" readonly></textarea>
+  <button type="button" id="copy-html">Copy HTML</button>
+
+  <h2>What the badge says</h2>
+  <p>It is refreshed once a day from the <code>manifest.json</code> on your default branch, with the same manifest checks as the <a href="/plugin-inspector/">Inspector</a>. The rules that only apply to new submissions (no "obsidian" or "plugin" in the name) are left out for plugins that are already listed.</p>
+  <ul>
+    <li><b>healthy</b>: no issues or notes.</li>
+    <li><b>N notes</b>: advice only, such as a description without a final period.</li>
+    <li><b>N issues</b>: something the directory expects is missing or wrong.</li>
+    <li><b>unknown</b>: the manifest could not be read. This is never shown as healthy.</li>
+  </ul>
+  <p class="muted">The release, versions.json and README checks are on the full Inspector page for your plugin, which the badge links to. Only plugins in the Obsidian directory have a badge. Unofficial; not affiliated with Obsidian. Shields.io draws the image when your README is viewed; nothing is sent to us.</p>
+
+  <footer><p>Made by <a href="/">Hidden Problems Lab</a> · <a href="https://github.com/perezamadorluisenrique-gif/perezamadorluisenrique-gif.github.io">Source</a></p></footer>
+</main>
+<script src="../inspect.js"></script>
+<script>
+(function () {
+  'use strict';
+  var I = window.Inspect;
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $('id'), md = $('md'), html = $('html'), status = $('status');
+  var valid = /^[a-z0-9][a-z0-9._-]{0,99}$/;
+  function update() {
+    var id = input.value.trim().toLowerCase();
+    if (!id) { md.value = ''; html.value = ''; status.textContent = ''; return; }
+    if (!valid.test(id)) {
+      md.value = ''; html.value = '';
+      status.textContent = 'Plugin ids use lowercase letters, digits, dots, dashes and underscores.';
+      return;
+    }
+    md.value = I.healthBadgeMarkdown(id);
+    html.value = I.healthBadgeHtml(id);
+    status.textContent = '';
+  }
+  function copy(area, btn, label) {
+    if (!area.value) return;
+    var done = function (ok) {
+      btn.textContent = ok ? 'Copied' : 'Press Ctrl+C to copy';
+      setTimeout(function () { btn.textContent = label; }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(area.value).then(function () { done(true); }, function () { area.select(); done(false); });
+    else { area.select(); done(false); }
+  }
+  input.addEventListener('input', update);
+  $('copy-md').addEventListener('click', function () { copy(md, this, 'Copy Markdown'); });
+  $('copy-html').addEventListener('click', function () { copy(html, this, 'Copy HTML'); });
+  var q = new URLSearchParams(location.search).get('id');
+  if (q) { input.value = q; update(); }
+})();
+</script>
+<script src="/stats.js" defer></script>
+</body>
+</html>

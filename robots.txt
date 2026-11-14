@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perezamadorluisenrique-gif.github.io/sitemap.xml

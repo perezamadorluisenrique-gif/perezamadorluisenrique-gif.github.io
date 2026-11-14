@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dice Rolls: free Obsidian plugin</title>
+<meta name="description" content="Inline dice rolls you click to reroll, in Live Preview and Reading view, with full dice notation, a roll dialog and a roll history. Reads Dice Roller notes.">
+<link rel="canonical" href="https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/">
+<link rel="alternate" hreflang="en" href="https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/">
+<link rel="alternate" hreflang="es" href="https://perezamadorluisenrique-gif.github.io/catalog/es/dice-rolls/">
+<link rel="alternate" hreflang="x-default" href="https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/">
+<meta name="theme-color" content="#1f2937">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hidden Problems Lab">
+<meta property="og:title" content="Dice Rolls: free Obsidian plugin">
+<meta property="og:description" content="Inline dice rolls you click to reroll, in Live Preview and Reading view, with full dice notation, a roll dialog and a roll history. Reads Dice Roller notes.">
+<meta property="og:url" content="https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/">
+<meta property="og:image" content="https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/media/dice-rolls-og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23fbbf24' stroke-width='3'/%3E%3Cpath d='M22 22 L27 27' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/catalog/catalog.css">
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Dice Rolls","description":"Inline dice rolls you click to reroll, in Live Preview and Reading view, with full dice notation, a roll dialog and a roll history. Reads Dice Roller notes.","applicationCategory":"ProductivityApplication","operatingSystem":"Windows, macOS, Linux, iOS, Android (Obsidian)","url":"https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/","image":"https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/media/dice-rolls-og.jpg","inLanguage":"en","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"Hidden Problems Lab","url":"https://perezamadorluisenrique-gif.github.io/"},"softwareVersion":"0.2.0","codeRepository":"https://github.com/perezamadorluisenrique-gif/dice-rolls"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Catalog","item":"https://perezamadorluisenrique-gif.github.io/catalog/"},{"@type":"ListItem","position":2,"name":"Dice Rolls","item":"https://perezamadorluisenrique-gif.github.io/catalog/dice-rolls/"}]}]</script>
+</head>
+<body>
+<header class="top"><a class="brand" href="/">Hidden Problems Lab</a><nav aria-label="Main"><a href="/catalog/">Catalog</a><a href="/plugin-inspector/">Plugin Inspector</a><a href="/catalog/es/dice-rolls/" hreflang="es" lang="es">English</a></nav></header>
+<main>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="https://perezamadorluisenrique-gif.github.io/catalog/">Catalog</a> <span aria-hidden="true">/</span> <span>Obsidian plugins</span></nav>
+<p class="eyebrow">Free Obsidian plugin</p>
+<h1>Dice Rolls</h1>
+<p class="lead">Inline dice rolls you click to reroll, in Live Preview and Reading view, with full dice notation, a roll dialog and a roll history. Reads Dice Roller notes.</p>
+<p class="actions"><a class="btn" href="https://community.obsidian.md/plugins/dice-rolls" rel="noopener">Install from the Obsidian directory</a> <a class="btn alt" href="obsidian://show-plugin?id=dice-rolls" rel="noopener">Open in Obsidian</a> <a class="btn alt" href="https://github.com/perezamadorluisenrique-gif/dice-rolls" rel="noopener">Source code and issues</a></p>
+<figure class="media"><video autoplay loop muted playsinline controls preload="metadata" poster="media/dice-rolls-thumb.jpg" aria-label="A note in Live Preview where each dice formula shows as its result, with a dice button; a natural 20 is green and a natural 1 red"><source src="media/dice-rolls.mp4" type="video/mp4"><img src="media/dice-rolls.png" alt="A note in Live Preview where each dice formula shows as its result, with a dice button; a natural 20 is green and a natural 1 red"></video><figcaption>A note in Live Preview where each dice formula shows as its result, with a dice button; a natural 20 is green and a natural 1 red</figcaption></figure>
+<section><h2>What it does</h2>
+<p>Roll dice right inside your notes. Write a formula in inline code that starts with <code>dice:</code> and it turns into its result. Click the result to roll again.</p>
+<p>It works in Live Preview and in Reading view, on desktop and on mobile. Hover over a result to see the formula and every die rolled. Put the cursor inside a roll to edit its formula. A roll keeps its result while you edit around it; it changes only when you click it.</p>
+</section>
+<section><h2>Highlights</h2>
+<ul><li><strong>No surprise rewrites of your notes.</strong> A <code>dice-mod:</code> roll writes its result into the note only when you click it, or when you run <strong>Write the results of dice-mod rolls in this note</strong>. Either way it is one change that one undo takes back, and it is refused if the note changed in the meantime.</li><li><strong>Custom ranges include both ends.</strong> <code>1d[3,5]</code> rolls 3, 4 or 5, and so does <code>1d[3-5]</code>. A list of three or more numbers, such as <code>1d[1,3,5]</code>, is a die with exactly those faces.</li><li><strong>A roll history</strong> in the sidebar, with the note each roll came from, and a dialog to roll any formula without writing it into a note.</li><li><strong>Clear errors.</strong> A formula that cannot be rolled stays visible, underlined, with the reason in its tooltip.</li></ul></section>
+<section><h2>Details</h2>
+<dl class="facts"><dt>Version</dt><dd>0.2.0</dd><dt>Needs Obsidian</dt><dd>1.4.4 or newer</dd><dt>Platforms</dt><dd>Desktop and mobile</dd><dt>Author</dt><dd>Siulved54</dd><dt>Price</dt><dd>Free and open source</dd></dl>
+</section>
+<section><h2>More free tools</h2>
+<ul class="related"><li><a href="/catalog/emoji-search/">Emoji Search</a>: Insert emojis from a searchable picker or by typing a :shortcode.</li><li><a href="/catalog/explorer-colors-plus/">Explorer Colors Plus</a>: Color files and folders in the file explorer, with a palette, cascading to children, and import…</li><li><a href="/catalog/folder-counts/">Folder Counts</a>: Show how many notes or files each folder holds in the file explorer, with a vault total, file type…</li><li><a href="/catalog/hybrid-line-numbers/">Hybrid Line Numbers</a>: Relative and hybrid line numbers for Vim-style jumps.</li></ul></section>
+<section class="same-author"><h2>From the same author</h2>
+<p>Other free tools from Hidden Problems Lab:</p>
+<ul class="related"><li><a href="/catalog/book-studio-web/">Book Studio for the web</a>: <span lang="en">Turn Markdown notes into a KDP print PDF and an accessible EPUB 3, in your browser, with nothing uploaded.</span></li><li><a href="/catalog/update-radar/">Update Radar</a>: <span lang="en">Checks your installed community add-ons for updates in the background, shows release notes and…</span></li><li><a href="/catalog/claimable/">claimable</a>: <span lang="en">Tells you whether a GitHub issue is really free to work on, before you start.</span></li><li><a href="/cert-radar/">47-Day Cert Radar</a>: <span lang="en">See every public TLS certificate for a domain and when each one breaks under the shorter lifetimes coming from 2026.</span></li><li><a href="/same-pill-new-look/">Same Pill, New Look</a>: <span lang="en">Warns you when a refill comes from a different generic maker and will look different.</span></li><li><a href="/recall-radar/">RecallRadar</a>: <span lang="en">Checks products, food and cars you own against U.S. recalls.</span></li></ul></section>
+</main>
+<footer><p>Everything in this catalog is free and open source. Pages are generated from each product's own README and manifest, so they match the latest release.</p><p><a href="/catalog/">All products</a> · <a href="/">Hidden Problems Lab</a></p></footer>
+</body>
+</html>

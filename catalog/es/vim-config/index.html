@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vim Config: plugin de Obsidian gratis</title>
+<meta name="description" content="Loads a vimrc-style file from your vault so your key mappings and editor commands are ready when vim mode starts.">
+<link rel="canonical" href="https://perezamadorluisenrique-gif.github.io/catalog/es/vim-config/">
+<link rel="alternate" hreflang="es" href="https://perezamadorluisenrique-gif.github.io/catalog/es/vim-config/">
+<link rel="alternate" hreflang="en" href="https://perezamadorluisenrique-gif.github.io/catalog/vim-config/">
+<link rel="alternate" hreflang="x-default" href="https://perezamadorluisenrique-gif.github.io/catalog/vim-config/">
+<meta name="theme-color" content="#1f2937">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hidden Problems Lab">
+<meta property="og:title" content="Vim Config: plugin de Obsidian gratis">
+<meta property="og:description" content="Loads a vimrc-style file from your vault so your key mappings and editor commands are ready when vim mode starts.">
+<meta property="og:url" content="https://perezamadorluisenrique-gif.github.io/catalog/es/vim-config/">
+<meta property="og:image" content="https://perezamadorluisenrique-gif.github.io/catalog/vim-config/media/vim-config-og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2937'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23fbbf24' stroke-width='3'/%3E%3Cpath d='M22 22 L27 27' stroke='%23fbbf24' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/catalog/catalog.css">
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Vim Config","description":"Loads a vimrc-style file from your vault so your key mappings and editor commands are ready when vim mode starts.","applicationCategory":"ProductivityApplication","operatingSystem":"Windows, macOS, Linux, iOS, Android (Obsidian)","url":"https://perezamadorluisenrique-gif.github.io/catalog/es/vim-config/","image":"https://perezamadorluisenrique-gif.github.io/catalog/vim-config/media/vim-config-og.jpg","inLanguage":"es","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"Hidden Problems Lab","url":"https://perezamadorluisenrique-gif.github.io/"},"softwareVersion":"0.1.1","codeRepository":"https://github.com/perezamadorluisenrique-gif/vim-config"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Catálogo","item":"https://perezamadorluisenrique-gif.github.io/catalog/es/"},{"@type":"ListItem","position":2,"name":"Vim Config","item":"https://perezamadorluisenrique-gif.github.io/catalog/es/vim-config/"}]}]</script>
+</head>
+<body>
+<header class="top"><a class="brand" href="/">Hidden Problems Lab</a><nav aria-label="Principal"><a href="/catalog/es/">Catálogo</a><a href="/plugin-inspector/">Plugin Inspector</a><a href="/catalog/vim-config/" hreflang="en" lang="en">Español</a></nav></header>
+<main>
+<nav class="crumbs" aria-label="Ruta de navegación"><a href="https://perezamadorluisenrique-gif.github.io/catalog/es/">Catálogo</a> <span aria-hidden="true">/</span> <span>Plugins de Obsidian</span></nav>
+<p class="eyebrow">Plugin de Obsidian gratis</p>
+<h1>Vim Config</h1>
+<p class="lead"><span lang="en">Loads a vimrc-style file from your vault so your key mappings and editor commands are ready when vim mode starts.</span></p>
+<p class="actions"><a class="btn" href="https://community.obsidian.md/plugins/vim-config" rel="noopener">Instalar desde el directorio de Obsidian</a> <a class="btn alt" href="obsidian://show-plugin?id=vim-config" rel="noopener">Abrir en Obsidian</a> <a class="btn alt" href="https://github.com/perezamadorluisenrique-gif/vim-config" rel="noopener">Código fuente e incidencias</a></p>
+<figure class="media"><img src="/catalog/vim-config/media/vim-config.png" alt="A vimrc file loaded by Vim Config, with the load notice" loading="lazy"><figcaption>A vimrc file loaded by Vim Config, with the load notice</figcaption></figure>
+<section><h2>Qué hace</h2>
+<p class="note">El texto que describe el producto está en inglés, igual que en su repositorio.</p>
+<p lang="en">Loads a vimrc-style file from your vault so your key mappings and editor commands are ready when vim mode starts.</p>
+<p lang="en">Obsidian's vim mode has no startup file. With Vim Config you keep your mappings in one file, and they are applied when Obsidian starts and again whenever you save the file. A file written for Vimrc Support works as it is.</p>
+</section>
+<section><h2>Lo más destacado</h2>
+<ul lang="en"><li><code>map</code>, <code>noremap</code> and their <code>n</code>, <code>i</code>, <code>v</code> and <code>x</code> forms; <code>unmap</code> and <code>mapclear</code> in the same forms. <code>&lt;silent&gt;</code>, <code>&lt;nowait&gt;</code> and similar arguments are accepted and ignored.</li><li><code>let mapleader = &quot;…&quot;</code>, then <code>&lt;Leader&gt;</code> in later lines.</li><li><code>exmap &lt;name&gt; &lt;command&gt;</code> defines your own <code>:name</code> command. <code>obcommand &lt;id&gt;</code> runs an Obsidian command by its id (shown in <strong>Settings → Hotkeys</strong>), so a mapping can do anything the command palette can.</li><li><code>set clipboard=unnamed</code> (or <code>unnamedplus</code>) makes yanks and deletes go to the system clipboard, and pastes use it. The clipboard is read when the window gains focus or after a copy, so text copied in another app is there when you come back to Obsidian.</li><li>Other <code>set</code> options are passed to the vim engine, which reports the ones it does not know.</li><li>A line that starts with <code>\</code> continues the line before.</li></ul></section>
+<section><h2>Detalles</h2>
+<dl class="facts"><dt>Versión</dt><dd>0.1.1</dd><dt>Requiere Obsidian</dt><dd>0.16.0 o posterior</dd><dt>Plataformas</dt><dd>Escritorio y móvil</dd><dt>Autor</dt><dd>Siulved54</dd><dt>Precio</dt><dd>Gratis y de código abierto</dd></dl>
+</section>
+<section><h2>Más herramientas gratuitas</h2>
+<ul class="related"><li><a href="/catalog/es/web-search-menu/">Web Search Menu</a>: <span lang="en">Search the web for selected text or the note title from the right-click menu, with engines you define.</span></li><li><a href="/catalog/es/word-lookup/">Word Lookup</a>: <span lang="en">Look up any word in a sidebar dictionary with definitions, phonetics, synonyms and antonyms, or…</span></li><li><a href="/catalog/es/zoom-into-section/">Zoom Into Section</a>: <span lang="en">Zoom into a heading or list item to see only it and its contents, with a breadcrumb bar to climb back out.</span></li><li><a href="/catalog/es/book-lookup/">Book Lookup</a>: <span lang="en">Create book notes from Open Library or Google Books, with cover images, ISBN search and Book…</span></li></ul></section>
+<section class="same-author"><h2>Del mismo autor</h2>
+<p>Otras herramientas gratuitas de Hidden Problems Lab:</p>
+<ul class="related"><li><a href="/catalog/es/book-studio-web/">Book Studio for the web</a>: <span lang="en">Turn Markdown notes into a KDP print PDF and an accessible EPUB 3, in your browser, with nothing uploaded.</span></li><li><a href="/catalog/es/update-radar/">Update Radar</a>: <span lang="en">Checks your installed community add-ons for updates in the background, shows release notes and…</span></li><li><a href="/catalog/es/claimable/">claimable</a>: <span lang="en">Tells you whether a GitHub issue is really free to work on, before you start.</span></li><li><a href="/cert-radar/">47-Day Cert Radar</a>: <span lang="en">See every public TLS certificate for a domain and when each one breaks under the shorter lifetimes coming from 2026.</span></li><li><a href="/same-pill-new-look/">Same Pill, New Look</a>: <span lang="en">Warns you when a refill comes from a different generic maker and will look different.</span></li><li><a href="/recall-radar/">RecallRadar</a>: <span lang="en">Checks products, food and cars you own against U.S. recalls.</span></li></ul></section>
+</main>
+<footer><p>Todo este catálogo es gratuito y de código abierto. Las páginas se generan a partir del README y el manifiesto de cada producto, así que coinciden con la última versión.</p><p><a href="/catalog/es/">Todos los productos</a> · <a href="/">Hidden Problems Lab</a></p></footer>
+</body>
+</html>
