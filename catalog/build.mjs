@@ -13,6 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { T, tr } from './i18n.mjs';
 import { pluginFacts, renderAlternative, renderAlternativesIndex } from './alternatives.mjs';
+import { wpFacts, wpApi, renderWpAlternative } from './wp-alternatives.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SITE = 'https://perezamadorluisenrique-gif.github.io';
@@ -579,7 +580,7 @@ export function validate(out) {
 }
 
 // ---------- main ----------
-export async function build({ out, local, products, directory, dirList, stats, alternatives, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
+export async function build({ out, local, products, directory, dirList, stats, alternatives, wpInfo, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
 	const conf = JSON.parse(fs.readFileSync(path.join(HERE, 'products.json'), 'utf8'));
 	const src = makeSource({ local, owner: conf.owner });
 	const warns = [];
@@ -622,11 +623,13 @@ export async function build({ out, local, products, directory, dirList, stats, a
 	// "Alternative to" pages. They need the directory files; if those are unreachable the pages are skipped, never half-written.
 	const altConf = alternatives === undefined ? JSON.parse(fs.readFileSync(path.join(HERE, 'alternatives.json'), 'utf8')).pages : alternatives;
 	const altItems = [];
-	if (altConf.length) {
+	const obsConf = altConf.filter((p) => p.kind !== 'wordpress');
+	const wpConf = altConf.filter((p) => p.kind === 'wordpress');
+	if (obsConf.length) {
 		try {
 			dirList = dirList || (await src.json(OBSIDIAN_DIRECTORY));
 			stats = stats || (await src.json(OBSIDIAN_STATS));
-			for (const page of altConf) {
+			for (const page of obsConf) {
 				const product = loaded.find((x) => x.slug === page.ours);
 				const find = (id) => dirList.find((x) => x.id === id);
 				const rival = pluginFacts(find(page.rival), stats[page.rival]);
@@ -641,6 +644,22 @@ export async function build({ out, local, products, directory, dirList, stats, a
 			}
 		} catch (e) {
 			ctx.warn(`alternatives skipped: ${e.message}`);
+		}
+	}
+	// WordPress pages: facts from the wordpress.org plugin API (or the injected `wpInfo` map in tests).
+	for (const page of wpConf) {
+		try {
+			const product = loaded.find((x) => x.slug === page.ours);
+			const get = async (slug) => (wpInfo ? wpInfo[slug] : await src.json(wpApi(slug)));
+			const rival = wpFacts(await get(page.rival));
+			const ours = product ? wpFacts(await get((list.find((x) => x.slug === page.ours) || {}).wpSlug || page.ours)) : null;
+			if (!product || !rival || !ours) {
+				ctx.warn(`alternatives/${page.slug}: missing data, page skipped`);
+				continue;
+			}
+			altItems.push({ page, facts: { rival, ours, product } });
+		} catch (e) {
+			ctx.warn(`alternatives/${page.slug} skipped: ${e.message}`);
 		}
 	}
 	const altFor = new Map(altItems.map((i) => [i.page.ours, i]));
@@ -671,7 +690,7 @@ export async function build({ out, local, products, directory, dirList, stats, a
 			altUrls.push(`${SITE}/catalog/${urlSeg}/`);
 			for (const it of altItems) {
 				fs.mkdirSync(path.join(root, seg, it.page.slug), { recursive: true });
-				fs.writeFileSync(path.join(root, seg, it.page.slug, 'index.html'), renderAlternative(it.page, it.facts, lang, date));
+				fs.writeFileSync(path.join(root, seg, it.page.slug, 'index.html'), (it.page.kind === 'wordpress' ? renderWpAlternative : renderAlternative)(it.page, it.facts, lang, date));
 				altUrls.push(`${SITE}/catalog/${urlSeg}/${it.page.slug}/`);
 			}
 		}
