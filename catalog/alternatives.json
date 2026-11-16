@@ -8,6 +8,9 @@
   { "slug": "file-color", "ours": "explorer-colors-plus", "rival": "obsidian-file-color" },
   { "slug": "list-callouts", "ours": "list-item-callouts", "rival": "obsidian-list-callouts" },
   { "slug": "reading-time", "ours": "note-reading-time", "rival": "obsidian-reading-time" },
+  { "slug": "emoji-toolbar", "ours": "emoji-search", "rival": "obsidian-emoji-toolbar" },
+  { "slug": "automatic-table-of-contents", "ours": "inline-toc", "rival": "automatic-table-of-contents" },
+  { "slug": "relative-line-numbers", "ours": "hybrid-line-numbers", "rival": "obsidian-relative-line-numbers" },
   { "slug": "broken-link-checker", "kind": "wordpress", "ours": "linkvane", "rival": "broken-link-checker" }
  ]
 }
