@@ -179,15 +179,16 @@ export function renderAlternativesIndex(items, lang = 'en') {
 	const t = T[lang];
 	const segment = lang === 'es' ? 'alternativas' : 'alternatives';
 	const base = `${SITE}/catalog/${lang === 'es' ? 'es/' : ''}${segment}/`;
-	const title = lang === 'es' ? 'Alternativas gratis a plugins populares de Obsidian' : 'Free alternatives to popular Obsidian plugins';
+	const title = lang === 'es' ? 'Alternativas gratis a plugins populares' : 'Free alternatives to popular plugins';
 	const desc = lang === 'es'
-		? 'Comparaciones con datos públicos entre cuatro plugins populares de Obsidian y sus alternativas gratuitas, con pasos para cambiar sin perder tu trabajo.'
-		: 'Side-by-side facts for four popular Obsidian plugins and their free alternatives, with steps to switch without losing your work.';
+		? 'Comparaciones con datos públicos entre plugins populares de Obsidian y WordPress y sus alternativas gratuitas, con pasos para cambiar sin perder tu trabajo.'
+		: 'Side-by-side facts for popular Obsidian and WordPress plugins and their free alternatives, with steps to switch without losing your work.';
 	const jsonld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, description: desc, url: base, inLanguage: lang };
 	const alts = [{ lang: lang === 'es' ? 'en' : 'es', url: lang === 'es' ? `${SITE}/catalog/alternatives/` : `${SITE}/catalog/es/alternativas/` }];
 	let h = head({ title, description: desc, canonical: base, image: `${SITE}/catalog/og-default.png`, jsonld, lang, alts });
 	h += `<h1>${esc(title)}</h1>\n<ul class="related">${items
-		.map((i) => `<li><a href="${base.replace(SITE, '')}${i.page.slug}/">${esc(lang === 'es' ? `${i.facts.ours.name}: alternativa a ${i.facts.rival.name}` : `${i.facts.ours.name}: alternative to ${i.facts.rival.name}`)}</a></li>`)
+		.map((i) => ({ ...i, facts: { ...i.facts, ours: { ...i.facts.ours, name: i.facts.ours.name.split(/\s[–-]\s/)[0] } } }))
+		.map((i) => `<li><a href="${base.replace(SITE, '')}${i.page.slug}/">${esc(lang === 'es' ? `${i.facts.ours.name}${i.page.kind === 'wordpress' ? ' frente a' : ': alternativa a'} ${i.facts.rival.name}` : `${i.facts.ours.name}${i.page.kind === 'wordpress' ? ' vs' : ': alternative to'} ${i.facts.rival.name}`)}</a></li>`)
 		.join('')}</ul>\n`;
 	return h + footFor(lang);
 }

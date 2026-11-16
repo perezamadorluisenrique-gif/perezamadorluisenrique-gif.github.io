@@ -28,7 +28,7 @@ General rules: the owner's Claude project instructions. This file adds only what
 - Video: `catalog/video/<slug>.mp4` (real Obsidian captures, committed) wins; else a README GIF becomes MP4; else the README's first image. Pro and prices never appear there.
 - The build validates every page (title, description, one h1, OG, alt, JSON-LD, canonical in the sitemap) and exits 1 on a problem.
 
-- Alternative pages: `catalog/alternatives.json` lists `{slug, ours, rival}`; `catalog/alternatives.mjs` renders `/catalog/alternatives/<slug>/` and `/catalog/es/alternativas/<slug>/` from the Obsidian directory files only (numbers and dates are never typed by hand; `test/alternatives.test.js` fails on any number outside the facts). Neutral tone; if the rival's author asks, remove their entry. Spanish pages translate the frame only, product text stays English (`lang="en"`).
+- Alternative pages: `catalog/alternatives.json` lists `{slug, ours, rival}`; `catalog/alternatives.mjs` renders `/catalog/alternatives/<slug>/` and `/catalog/es/alternativas/<slug>/` from the Obsidian directory files only (numbers and dates are never typed by hand; `test/alternatives.test.js` fails on any number outside the facts). Entries with `"kind": "wordpress"` (`catalog/wp-alternatives.mjs`) take their numbers from the wordpress.org plugin API instead (`test/alternatives.test.js` checks them too); their feature rows only restate what each plugin says in its own wordpress.org listing. Neutral tone; if the rival's author asks, remove their entry. Spanish pages translate the frame only, product text stays English (`lang="en"`).
 - Every product page also has `/catalog/es/<slug>/` and a "From the same author" block (`SAME_AUTHOR` in `catalog/build.mjs`).
 
 ## Traps
