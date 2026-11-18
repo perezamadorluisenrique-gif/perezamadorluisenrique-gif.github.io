@@ -196,6 +196,34 @@
    "optional": true
   },
   {
+   "slug": "run-code-blocks",
+   "kind": "obsidian",
+   "repo": "run-code-blocks",
+   "name": "Run Code Blocks",
+   "optional": true
+  },
+  {
+   "slug": "canvas-finder",
+   "kind": "obsidian",
+   "repo": "canvas-finder",
+   "name": "Canvas Finder",
+   "optional": true
+  },
+  {
+   "slug": "folder-index-notes",
+   "kind": "obsidian",
+   "repo": "folder-index-notes",
+   "name": "Folder Index Notes",
+   "optional": true
+  },
+  {
+   "slug": "split-by-heading",
+   "kind": "obsidian",
+   "repo": "split-by-heading",
+   "name": "Split by Heading",
+   "optional": true
+  },
+  {
    "slug": "linkvane",
    "kind": "wordpress",
    "wpSlug": "linkvane",

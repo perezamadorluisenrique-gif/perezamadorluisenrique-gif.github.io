@@ -175,7 +175,7 @@ export function renderAlternative(page, facts, lang = 'en', built) {
 	return h + footFor(lang);
 }
 
-export function renderAlternativesIndex(items, lang = 'en') {
+export function renderAlternativesIndex(items, lang = 'en', withTasks = false) {
 	const t = T[lang];
 	const segment = lang === 'es' ? 'alternativas' : 'alternatives';
 	const base = `${SITE}/catalog/${lang === 'es' ? 'es/' : ''}${segment}/`;
@@ -190,5 +190,6 @@ export function renderAlternativesIndex(items, lang = 'en') {
 		.map((i) => ({ ...i, facts: { ...i.facts, ours: { ...i.facts.ours, name: i.facts.ours.name.split(/\s[–-]\s/)[0] } } }))
 		.map((i) => `<li><a href="${base.replace(SITE, '')}${i.page.slug}/">${esc(lang === 'es' ? `${i.facts.ours.name}${i.page.kind === 'wordpress' ? ' frente a' : ': alternativa a'} ${i.facts.rival.name}` : `${i.facts.ours.name}${i.page.kind === 'wordpress' ? ' vs' : ': alternative to'} ${i.facts.rival.name}`)}</a></li>`)
 		.join('')}</ul>\n`;
+	if (withTasks) h += `<p><a href="/catalog/${lang === 'es' ? 'es/tareas' : 'tasks'}/">${lang === 'es' ? 'Guías por tarea' : 'Guides by task'}</a></p>\n`;
 	return h + footFor(lang);
 }
