@@ -56,3 +56,5 @@ footer p { margin: 0 0 8px; }
   h1 { font-size: 1.6rem; }
   .btn { width: 100%; }
 }
+
+figure.shot video { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #000; }

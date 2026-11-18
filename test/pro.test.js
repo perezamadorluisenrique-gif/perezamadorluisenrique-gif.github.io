@@ -146,6 +146,19 @@ test('every pro page links in its footer to every product', () => {
   }
 });
 
+test('the six Pro plugin pages embed their demo video, silent, with a poster that exists', () => {
+  for (const dir of ['update-radar', 'section-numbering', 'book-studio', 'typography', 'text-case', 'dataview-to-bases']) {
+    assert.ok(fs.statSync(path.join(proDir, dir, 'demo.mp4')).size > 50000, dir + ' video');
+    assert.ok(fs.existsSync(path.join(proDir, dir, 'poster.png')), dir + ' poster');
+    for (const [f, pre] of [[dir + '/index.html', ''], [dir + '/es/index.html', '../']]) {
+      const h = read(f);
+      assert.ok(h.includes(`<video controls muted playsinline preload="metadata" poster="${pre}poster.png"`), f);
+      assert.ok(!/<video[^>]*autoplay/.test(h), f + ' does not autoplay');
+      assert.ok(h.includes(`src="${pre}demo.mp4"`), f);
+    }
+  }
+});
+
 test('pack pages say the free plugin is enough and promise no licence key or trial', () => {
   const plugin = { 'kdp-book-vault': 'book-studio', 'thesis-vault': 'section-numbering' };
   for (const dir of PACKS) {
