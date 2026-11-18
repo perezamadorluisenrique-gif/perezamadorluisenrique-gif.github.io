@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { T, tr } from './i18n.mjs';
 import { pluginFacts, renderAlternative, renderAlternativesIndex } from './alternatives.mjs';
 import { wpFacts, wpApi, renderWpAlternative } from './wp-alternatives.mjs';
+import { taskFacts, renderTask, renderTasksIndex } from './tasks.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SITE = 'https://perezamadorluisenrique-gif.github.io';
@@ -484,7 +485,10 @@ export function renderPage(prod, ctx, related, opts = {}) {
 	h += `<section><h2>${t.details}</h2>\n<dl class="facts">${prod.facts.filter((f) => f[1]).map(([k, v]) => `<dt>${esc(tr(lang, 'facts', k))}</dt><dd>${esc(tr(lang, 'labels', v))}</dd>`).join('')}</dl>\n`;
 	if (prod.kind === 'obsidian' && !prod.listed) h += `<p class="note">${t.notListed(esc(prod.id))}</p>\n`;
 	h += `</section>\n`;
-	if (opts.alt) h += `<section><h2>${t.cameFrom(esc(opts.alt.name))}</h2>\n<p><a href="${opts.alt.url}">${t.cameFromLink}</a>.</p></section>\n`;
+	const cmp = opts.alts && opts.alts.length ? opts.alts : opts.alt ? [opts.alt] : [];
+	if (cmp.length === 1) h += `<section><h2>${t.cameFrom(esc(cmp[0].name))}</h2>\n<p><a href="${cmp[0].url}">${t.cameFromLink}</a>.</p></section>\n`;
+	else if (cmp.length > 1) h += `<section><h2>${t.altSection}</h2>\n<ul class="related">${cmp.map((a) => `<li><a href="${a.url}">${t.cameFrom(esc(a.name))}</a></li>`).join('')}</ul></section>\n`;
+	if (opts.tasks && opts.tasks.length) h += `<section><h2>${t.tasksSection}</h2>\n<ul class="related">${opts.tasks.map((x) => `<li><a href="${x.url}">${esc(x.title)}</a></li>`).join('')}</ul></section>\n`;
 	if (related.length) {
 		const rel = (r) => (lang === 'es' ? `/catalog/es/${r.slug}/` : `/catalog/${r.slug}/`);
 		h += `<section><h2>${t.moreFree}</h2>\n<ul class="related">${related.map((r) => `<li><a href="${rel(r)}">${esc(r.name)}</a>: ${en(esc(short(r.tagline || r.intro[0] || '')))}</li>`).join('')}</ul></section>\n`;
@@ -580,7 +584,7 @@ export function validate(out) {
 }
 
 // ---------- main ----------
-export async function build({ out, local, products, directory, dirList, stats, alternatives, wpInfo, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
+export async function build({ out, local, products, directory, dirList, stats, alternatives, tasks, wpInfo, log = console.log, ffmpeg = hasFfmpeg(), date = new Date().toISOString().slice(0, 10) }) {
 	const conf = JSON.parse(fs.readFileSync(path.join(HERE, 'products.json'), 'utf8'));
 	const src = makeSource({ local, owner: conf.owner });
 	const warns = [];
@@ -662,7 +666,29 @@ export async function build({ out, local, products, directory, dirList, stats, a
 			ctx.warn(`alternatives/${page.slug} skipped: ${e.message}`);
 		}
 	}
-	const altFor = new Map(altItems.map((i) => [i.page.ours, i]));
+	// "Plugins by task" guides: same directory files, skipped (never half-written) if they are unreachable.
+	const taskConf = tasks === undefined ? JSON.parse(fs.readFileSync(path.join(HERE, 'tasks.json'), 'utf8')).pages : tasks;
+	const taskItems = [];
+	if (taskConf.length) {
+		try {
+			dirList = dirList || (await src.json(OBSIDIAN_DIRECTORY));
+			stats = stats || (await src.json(OBSIDIAN_STATS));
+			for (const page of taskConf) {
+				const rows = taskFacts(page, { dirList, stats, products: loaded });
+				if (!rows) {
+					ctx.warn(`tasks/${page.slug}: missing data, page skipped`);
+					continue;
+				}
+				taskItems.push({ page, rows });
+			}
+		} catch (e) {
+			ctx.warn(`tasks skipped: ${e.message}`);
+		}
+	}
+	const taskFor = new Map();
+	for (const i of taskItems) for (const slug of i.page.ours) taskFor.set(slug, [...(taskFor.get(slug) || []), i.page]);
+	const altFor = new Map();
+	for (const i of altItems) altFor.set(i.page.ours, [...(altFor.get(i.page.ours) || []), i]);
 	loaded.forEach((prod, i) => {
 		const peers = loaded.filter((x) => x.category === prod.category && x !== prod);
 		const k = peers.indexOf(loaded[(i + 1) % loaded.length]);
@@ -671,10 +697,11 @@ export async function build({ out, local, products, directory, dirList, stats, a
 		const a = altFor.get(prod.slug);
 		for (const lang of ['en', 'es']) {
 			const seg = lang === 'es' ? 'es/alternativas' : 'alternatives';
-			const alt = a ? { name: a.facts.rival.name, url: `/catalog/${seg}/${a.page.slug}/` } : null;
+			const alts = (a || []).map((x) => ({ name: x.facts.rival.name, url: `/catalog/${seg}/${x.page.slug}/` }));
+			const tasks = (taskFor.get(prod.slug) || []).map((x) => ({ title: lang === 'es' ? x.es.title : x.en.title, url: `/catalog/${lang === 'es' ? 'es/tareas' : 'tasks'}/${x.slug}/` }));
 			const dest = lang === 'es' ? path.join(root, 'es', prod.slug) : path.join(root, prod.slug);
 			fs.mkdirSync(dest, { recursive: true });
-			fs.writeFileSync(path.join(dest, 'index.html'), renderPage(prod, ctx, related, { lang, prods: loaded, alt }));
+			fs.writeFileSync(path.join(dest, 'index.html'), renderPage(prod, ctx, related, { lang, prods: loaded, alts, tasks }));
 		}
 	});
 	fs.mkdirSync(path.join(root, 'es'), { recursive: true });
@@ -686,7 +713,7 @@ export async function build({ out, local, products, directory, dirList, stats, a
 			const seg = lang === 'es' ? path.join('es', 'alternativas') : 'alternatives';
 			const urlSeg = lang === 'es' ? 'es/alternativas' : 'alternatives';
 			fs.mkdirSync(path.join(root, seg), { recursive: true });
-			fs.writeFileSync(path.join(root, seg, 'index.html'), renderAlternativesIndex(altItems, lang));
+			fs.writeFileSync(path.join(root, seg, 'index.html'), renderAlternativesIndex(altItems, lang, taskItems.length > 0));
 			altUrls.push(`${SITE}/catalog/${urlSeg}/`);
 			for (const it of altItems) {
 				fs.mkdirSync(path.join(root, seg, it.page.slug), { recursive: true });
@@ -695,11 +722,26 @@ export async function build({ out, local, products, directory, dirList, stats, a
 			}
 		}
 	}
-	const urls = [`${SITE}/`, `${SITE}/catalog/`, `${SITE}/catalog/es/`, ...loaded.flatMap((p) => [`${SITE}/catalog/${p.slug}/`, `${SITE}/catalog/es/${p.slug}/`]), ...altUrls, `${SITE}/plugin-inspector/`, `${SITE}/plugin-inspector/badge/`];
+	const taskUrls = [];
+	if (taskItems.length) {
+		for (const lang of ['en', 'es']) {
+			const seg = lang === 'es' ? path.join('es', 'tareas') : 'tasks';
+			const urlSeg = lang === 'es' ? 'es/tareas' : 'tasks';
+			fs.mkdirSync(path.join(root, seg), { recursive: true });
+			fs.writeFileSync(path.join(root, seg, 'index.html'), renderTasksIndex(taskItems, lang));
+			taskUrls.push(`${SITE}/catalog/${urlSeg}/`);
+			for (const it of taskItems) {
+				fs.mkdirSync(path.join(root, seg, it.page.slug), { recursive: true });
+				fs.writeFileSync(path.join(root, seg, it.page.slug, 'index.html'), renderTask(it.page, it.rows, lang, date, loaded));
+				taskUrls.push(`${SITE}/catalog/${urlSeg}/${it.page.slug}/`);
+			}
+		}
+	}
+	const urls = [`${SITE}/`, `${SITE}/catalog/`, `${SITE}/catalog/es/`, ...loaded.flatMap((p) => [`${SITE}/catalog/${p.slug}/`, `${SITE}/catalog/es/${p.slug}/`]), ...altUrls, ...taskUrls, `${SITE}/plugin-inspector/`, `${SITE}/plugin-inspector/badge/`];
 	fs.writeFileSync(path.join(out, 'sitemap.xml'), renderSitemap(urls, date));
 	fs.writeFileSync(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 	log(`catalog: ${loaded.length} products, ${loaded.filter((p) => p.media && p.media.video).length} with video`);
-	return { products: loaded, warns, alternatives: altItems, alternativesWanted: altConf.length };
+	return { products: loaded, warns, alternatives: altItems, alternativesWanted: altConf.length, tasks: taskItems, tasksWanted: taskConf.length };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -710,11 +752,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const out = path.resolve(arg('--out') || '_site');
 	const local = arg('--local') ? path.resolve(arg('--local')) : null;
 	fs.mkdirSync(out, { recursive: true });
-	const { alternatives, alternativesWanted } = await build({ out, local });
+	const { alternatives, alternativesWanted, tasks, tasksWanted } = await build({ out, local });
 	const v = validate(out);
 	if (alternatives.length < alternativesWanted) {
 		console.log(`  alternatives: ${alternatives.length} of ${alternativesWanted} pages built; not publishing a site that drops the others`);
 		v.errors.push('alternatives incomplete');
+	}
+	if (tasks.length < tasksWanted) {
+		console.log(`  tasks: ${tasks.length} of ${tasksWanted} pages built; not publishing a site that drops the others`);
+		v.errors.push('tasks incomplete');
 	}
 	console.log(`validate: ${v.pages} pages, ${v.errors.length} problems`);
 	for (const e of v.errors) console.log('  ' + e);

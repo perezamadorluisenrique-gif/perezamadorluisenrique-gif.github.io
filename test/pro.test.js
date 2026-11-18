@@ -14,15 +14,31 @@ const PRODUCTS = {
   'book-studio': 'book-studio-pro',
   'section-numbering': 'section-numbering-pro',
   'update-radar': 'update-radar-pro',
+  typography: 'typography-pro',
+  'text-case': 'text-case-pro',
+  'dataview-to-bases': 'dataview-to-bases-pro',
   linkvane: 'linkvane-pro',
   'kdp-book-vault': 'kdp-book-vault',
   'thesis-vault': 'thesis-report-vault',
 };
+const BUNDLES = {
+  writer: 'bundle-writer',
+  author: 'bundle-author',
+  academic: 'bundle-academic',
+  'all-obsidian': 'bundle-all-obsidian',
+};
 const PACKS = ['kdp-book-vault', 'thesis-vault'];
 const PRICES = {
-  'book-studio-pro': '39 USD', 'section-numbering-pro': '29 USD', 'update-radar-pro': '19 USD',
+  'book-studio-pro': '29 USD', 'section-numbering-pro': '29 USD', 'update-radar-pro': '24 USD',
+  'typography-pro': '15 USD', 'text-case-pro': '12 USD', 'dataview-to-bases-pro': '19 USD',
   'linkvane-pro': '', 'kdp-book-vault': '19 USD', 'thesis-report-vault': '12 USD',
+  'bundle-writer': '22 USD', 'bundle-author': '45 USD', 'bundle-academic': '42 USD', 'bundle-all-obsidian': '99 USD',
 };
+const TEAM = {
+  'book-studio-pro': '79 USD', 'section-numbering-pro': '79 USD', 'update-radar-pro': '69 USD',
+  'typography-pro': '39 USD', 'text-case-pro': '29 USD', 'dataview-to-bases-pro': '49 USD', 'bundle-all-obsidian': '249 USD',
+};
+const SHOP = 'https://plugins.bolsterfy.com';
 
 function htmlFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -31,19 +47,24 @@ function htmlFiles(dir) {
   });
 }
 
-test('config.json has the agreed shape and no ids filled in yet', () => {
+test('config.json points every product at the Bolsterfy shop, which is still switched off', () => {
   assert.deepStrictEqual(Object.keys(config).sort(), ['provider', 'providers', 'products'].sort());
-  assert.strictEqual(config.provider, '');
-  assert.deepStrictEqual(Object.keys(config.providers).sort(), ['gumroad', 'lemonsqueezy', 'polar']);
-  assert.ok(['polar', 'lemonsqueezy', 'gumroad'].every((k) => typeof config.providers[k] === 'object'));
-  assert.deepStrictEqual(Object.keys(config.products), Object.values(PRODUCTS));
-  const prices = PRICES;
+  assert.strictEqual(config.provider, 'bolsterfy');
+  assert.deepStrictEqual(Object.keys(config.providers), ['bolsterfy']);
+  assert.strictEqual(config.providers.bolsterfy.baseUrl, SHOP);
+  assert.strictEqual(config.providers.bolsterfy.open, false, 'the shop switch stays off until the owner turns sales on');
+  assert.deepStrictEqual(Object.keys(config.products), [...Object.values(PRODUCTS), ...Object.values(BUNDLES)]);
   for (const [id, p] of Object.entries(config.products)) {
-    assert.deepStrictEqual(Object.keys(p).sort(), ['checkoutUrl', 'name', 'price', 'productId']);
-    assert.strictEqual(p.price, prices[id]);
+    assert.deepStrictEqual(Object.keys(p).filter((k) => k !== 'teamPrice').sort(), ['checkoutUrl', 'name', 'price', 'productId']);
+    assert.strictEqual(p.price, PRICES[id], id);
+    assert.strictEqual(p.teamPrice, TEAM[id], id + ' team price');
     assert.ok(p.name.length > 0);
-    if (!p.checkoutUrl) continue;
+    if (id === 'linkvane-pro') {
+      assert.strictEqual(p.checkoutUrl, '', 'Linkvane Pro is not on sale yet');
+      continue;
+    }
     assert.ok(core.safeHttpsUrl(p.checkoutUrl), id + ' checkoutUrl must be https://');
+    assert.ok(p.checkoutUrl.startsWith(SHOP + '/plugins/') || p.checkoutUrl.startsWith(SHOP + '/bundles/'), id + ' goes to the shop');
   }
 });
 
@@ -51,6 +72,9 @@ test('index and every product page have an es twin that links both ways', () => 
   const pairs = [['index.html', 'es/index.html', '/pro/', '/pro/es/']];
   for (const dir of Object.keys(PRODUCTS)) {
     pairs.push([dir + '/index.html', dir + '/es/index.html', `/pro/${dir}/`, `/pro/${dir}/es/`]);
+  }
+  for (const dir of Object.keys(BUNDLES)) {
+    pairs.push([`bundles/${dir}/index.html`, `bundles/${dir}/es/index.html`, `/pro/bundles/${dir}/`, `/pro/bundles/${dir}/es/`]);
   }
   for (const [en, es, enUrl, esUrl] of pairs) {
     assert.ok(fs.existsSync(path.join(proDir, en)), en);
@@ -70,11 +94,40 @@ test('product pages carry the sections, the buy hook and the signature', () => {
       assert.ok(h.includes(`data-buy="${id}"`), f + ' has its Buy button');
       assert.ok(h.includes(`data-price="${id}"`), f + ' has its price');
       assert.ok(h.includes(config.products[id].price), f + ' static price matches config.json');
+      if (config.products[id].teamPrice) assert.ok(h.includes(`data-team="${id}">${config.products[id].teamPrice}<`), f + ' static team price matches config.json');
       assert.ok(config.products[id].price || /Price announced at launch|Precio al abrir las ventas/.test(h), f + ' says when the price comes');
       assert.match(h, /<details>/, f + ' has a FAQ');
       assert.match(h, /Siulved54/);
       assert.match(h, /<img [^>]*onerror=/, f + ' screenshot slot hides itself on error');
     }
+  }
+});
+
+test('bundle pages carry the price, the buy hook, the included products and the refund link', () => {
+  const contents = {
+    writer: ['typography', 'text-case'],
+    author: ['book-studio', 'typography', 'kdp-book-vault'],
+    academic: ['section-numbering', 'typography', 'thesis-vault'],
+    'all-obsidian': ['book-studio', 'section-numbering', 'update-radar', 'typography', 'text-case', 'dataview-to-bases', 'kdp-book-vault', 'thesis-vault'],
+  };
+  for (const [dir, id] of Object.entries(BUNDLES)) {
+    for (const lang of ['en', 'es']) {
+      const f = `bundles/${dir}/${lang === 'es' ? 'es/' : ''}index.html`;
+      const h = read(f);
+      assert.ok(h.includes(`data-buy="${id}"`) && h.includes(`data-price="${id}"`), f);
+      assert.ok(h.includes(`data-price="${id}">${config.products[id].price}<`), f + ' static price');
+      assert.ok(h.includes(SHOP + '/refunds'), f + ' links the shop refund page');
+      assert.match(h, /<details>/);
+      for (const inc of contents[dir]) assert.ok(h.includes(`href="/pro/${inc}/${lang === 'es' ? 'es/' : ''}"`), f + ' links ' + inc);
+    }
+  }
+});
+
+test('the Pro pages never say sales are open or closed, so they stay true when the shop switch flips', () => {
+  for (const f of htmlFiles(proDir)) {
+    if (f.includes('linkvane')) continue;
+    const h = fs.readFileSync(f, 'utf8');
+    assert.ok(!/not open yet|aún no están abiertas|payment service|servicio de pago/i.test(h.replace(/<p><span class="price" data-price="linkvane-pro">.*?<\/p>/g, '')), path.relative(proDir, f));
   }
 });
 
@@ -86,6 +139,9 @@ test('every pro page links in its footer to every product', () => {
     const foot = h.slice(h.indexOf('<footer>'));
     for (const dir of Object.keys(PRODUCTS)) {
       assert.ok(foot.includes(`href="/pro/${dir}/${es ? 'es/' : ''}"`), rel + ' footer links ' + dir);
+    }
+    for (const dir of Object.keys(BUNDLES)) {
+      assert.ok(foot.includes(`href="/pro/bundles/${dir}/${es ? 'es/' : ''}"`), rel + ' footer links bundle ' + dir);
     }
   }
 });
@@ -101,6 +157,26 @@ test('pack pages say the free plugin is enough and promise no licence key or tri
   }
   assert.match(read('kdp-book-vault/index.html'), /Not affiliated with Amazon; KDP is a trademark of Amazon/);
   assert.match(read('kdp-book-vault/es/index.html'), /No afiliado a Amazon; KDP es una marca de Amazon/);
+});
+
+test('refFrom keeps a clean ref and falls back to gh-pro', () => {
+  assert.strictEqual(core.refFrom('?ref=ur-update-all'), 'ur-update-all');
+  assert.strictEqual(core.refFrom('?x=1&ref=BSWEB-kdp'), 'bsweb-kdp');
+  for (const bad of ['', '?ref=', '?ref=a b', '?ref=<script>', '?ref=-x', '?ref=' + 'a'.repeat(41), undefined, null, 42]) {
+    assert.strictEqual(core.refFrom(bad), 'gh-pro', String(bad));
+  }
+});
+
+test('Bolsterfy buttons say Coming soon while the shop switch is off and carry the ref once it is on', () => {
+  const mk = (open) => ({ provider: 'bolsterfy', providers: { bolsterfy: { baseUrl: SHOP, open } }, products: { x: { name: 'X', price: '9 USD', checkoutUrl: SHOP + '/plugins/x' } } });
+  assert.deepStrictEqual(core.buyState(mk(false), 'x', 'en', 'ty-pro'), { enabled: false, href: '', label: 'Coming soon' });
+  assert.strictEqual(core.buyState(mk('yes'), 'x', 'en').enabled, false, 'only a real true opens the shop');
+  assert.deepStrictEqual(core.buyState(mk(true), 'x', 'en', 'ty-pro'), { enabled: true, href: SHOP + '/plugins/x?ref=ty-pro', label: 'Buy for 9 USD' });
+  assert.strictEqual(core.buyState(mk(true), 'x', 'es').href, SHOP + '/plugins/x?ref=gh-pro');
+  assert.strictEqual(core.buyState(mk(true), 'x', 'en', '<bad>').href, SHOP + '/plugins/x?ref=gh-pro');
+  assert.strictEqual(core.buyState(mk(true), 'nope', 'en').enabled, false);
+  // the real config is switched off, so every live page shows Coming soon today
+  for (const id of Object.keys(config.products)) assert.strictEqual(core.buyState(config, id, 'en', 'gh-pro').enabled, false, id);
 });
 
 test('buyState: empty, bad and good checkout URLs', () => {
@@ -119,7 +195,7 @@ test('buyState: empty, bad and good checkout URLs', () => {
 });
 
 test('priceText reads the price and tolerates bad config', () => {
-  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '39 USD');
+  assert.strictEqual(core.priceText(config, 'book-studio-pro'), '29 USD');
   assert.strictEqual(core.priceText(config, 'missing'), '');
   assert.strictEqual(core.priceText(undefined, 'x'), '');
 });
@@ -132,7 +208,7 @@ test('pro.js only writes external text with textContent', () => {
 
 test('no real-name text, no claude.ai, no analytics or third-party resources in pro/', () => {
   const files = htmlFiles(proDir);
-  assert.ok(files.length >= 12);
+  assert.ok(files.length >= 28);
   for (const f of files) {
     const h = fs.readFileSync(f, 'utf8');
     const rel = path.relative(proDir, f);

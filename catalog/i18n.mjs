@@ -53,6 +53,7 @@ export const T = {
 		facts: {},
 		labels: {},
 		altSection: 'Compared with other plugins',
+		tasksSection: 'Guides by task',
 	},
 	es: {
 		htmlLang: 'es',
@@ -110,6 +111,7 @@ export const T = {
 			'Open the web app': 'Abrir la aplicación web',
 		},
 		altSection: 'Comparado con otros plugins',
+		tasksSection: 'Guías por tarea',
 	},
 };
 

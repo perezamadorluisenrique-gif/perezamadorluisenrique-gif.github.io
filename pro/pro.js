@@ -6,6 +6,7 @@
   if (!core || !script) return;
   var lang = (document.documentElement.lang || 'en').slice(0, 2);
   var url = new URL('config.json', script.src).href;
+  var ref = core.refFrom(window.location.search);
 
   fetch(url, { cache: 'no-cache' })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('config ' + r.status)); })
@@ -14,8 +15,12 @@
         var text = core.priceText(config, el.getAttribute('data-price'));
         if (text) el.textContent = text;
       });
+      document.querySelectorAll('[data-team]').forEach(function (el) {
+        var p = config && config.products && Object.prototype.hasOwnProperty.call(config.products, el.getAttribute('data-team')) ? config.products[el.getAttribute('data-team')] : null;
+        if (p && typeof p.teamPrice === 'string' && p.teamPrice.trim()) el.textContent = p.teamPrice.trim();
+      });
       document.querySelectorAll('[data-buy]').forEach(function (el) {
-        var s = core.buyState(config, el.getAttribute('data-buy'), lang);
+        var s = core.buyState(config, el.getAttribute('data-buy'), lang, ref);
         el.textContent = s.label;
         if (s.enabled) {
           el.setAttribute('href', s.href);
