@@ -1,0 +1,96 @@
+{
+  "provider": "bolsterfy",
+  "providers": {
+    "bolsterfy": {
+      "baseUrl": "https://plugins.bolsterfy.com",
+      "open": false
+    }
+  },
+  "products": {
+    "book-studio-pro": {
+      "name": "Book Studio Pro",
+      "price": "29 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/book-studio-pro",
+      "productId": "",
+      "teamPrice": "79 USD"
+    },
+    "section-numbering-pro": {
+      "name": "Section Numbering Pro",
+      "price": "29 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/section-numbering-pro",
+      "productId": "",
+      "teamPrice": "79 USD"
+    },
+    "update-radar-pro": {
+      "name": "Update Radar Pro",
+      "price": "24 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/update-radar-pro",
+      "productId": "",
+      "teamPrice": "69 USD"
+    },
+    "typography-pro": {
+      "name": "Typography Pro",
+      "price": "15 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/typography-pro",
+      "productId": "",
+      "teamPrice": "39 USD"
+    },
+    "text-case-pro": {
+      "name": "Text Case Pro",
+      "price": "12 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/text-case-pro",
+      "productId": "",
+      "teamPrice": "29 USD"
+    },
+    "dataview-to-bases-pro": {
+      "name": "Dataview to Bases Pro",
+      "price": "19 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/dataview-to-bases-pro",
+      "productId": "",
+      "teamPrice": "49 USD"
+    },
+    "linkvane-pro": {
+      "name": "Linkvane Pro",
+      "price": "",
+      "checkoutUrl": "",
+      "productId": ""
+    },
+    "kdp-book-vault": {
+      "name": "KDP Book Vault",
+      "price": "19 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/kdp-book-vault",
+      "productId": ""
+    },
+    "thesis-report-vault": {
+      "name": "Thesis and Report Vault",
+      "price": "12 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/plugins/thesis-report-vault",
+      "productId": ""
+    },
+    "bundle-writer": {
+      "name": "Writer bundle",
+      "price": "22 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/bundles/writer",
+      "productId": ""
+    },
+    "bundle-author": {
+      "name": "Author bundle",
+      "price": "45 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/bundles/author",
+      "productId": ""
+    },
+    "bundle-academic": {
+      "name": "Academic bundle",
+      "price": "42 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/bundles/academic",
+      "productId": ""
+    },
+    "bundle-all-obsidian": {
+      "name": "All Obsidian bundle",
+      "price": "99 USD",
+      "checkoutUrl": "https://plugins.bolsterfy.com/bundles/all-obsidian",
+      "productId": "",
+      "teamPrice": "249 USD"
+    }
+  }
+}
